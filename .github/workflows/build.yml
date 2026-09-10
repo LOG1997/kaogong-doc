@@ -45,4 +45,4 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
           github_token: ${{ secrets.ACCESS_TOKEN }}
-          publish_dir: ./dist  # 或者你的构建输出目录，例如dist或public
+          publish_dir: ./.vitepress/dist  # 或者你的构建输出目录，例如dist或public
