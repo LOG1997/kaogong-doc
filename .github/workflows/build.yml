@@ -52,7 +52,7 @@ jobs:
         run: pnpm install
 
       - name: Build project
-        run: pnpm run build
+        run: pnpm docs:build
 
       # ⚠️ 关键步骤：解决 SPA 路由刷新 404 问题
       # GitHub Pages 默认找 404.html，复制一份 index.html 作为回退页
