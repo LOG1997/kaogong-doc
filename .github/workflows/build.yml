@@ -5,44 +5,65 @@ on:
     branches:
       - main  # 或者你想要触发构建的分支
 permissions:
-  contents: write  # 必须显式赋予写权限，默认是 read-only
-  pull-requests: read
+  contents: write
+  pages: write
+  id-token: write
 
+# 避免同时部署冲突
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest  # 或者你选择的任何其他运行环境
-
-    permissions:
-      contents: write
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: 24
+
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v3
         with:
           version: 11
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v3
         with:
-          node-version: 24.x
-          cache: pnpm
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build for production
-        run: pnpm docs:build
+      - name: Build project
+        run: pnpm run build
 
+      # ⚠️ 关键步骤：解决 SPA 路由刷新 404 问题
+      # GitHub Pages 默认找 404.html，复制一份 index.html 作为回退页
+      - name: Copy index.html to 404.html for SPA routing
+        run: cp .vitepress/dist/index.html .vitepress/dist/404.html
 
-      - name: Deploy to GitHub Pages  # 部署到GitHub Pages（如果需要）
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          publish_branch: gh-pages
-          force_orphan: true
-          github_token: ${{ secrets.ACCESS_TOKEN }}
-          publish_dir: ./.vitepress/dist  # 或者你的构建输出目录，例如dist或public
+          path: ./.vitepress/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
