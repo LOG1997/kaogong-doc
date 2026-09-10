@@ -7,7 +7,7 @@ import type { DefaultTheme } from 'vitepress'
 type SidebarItem = DefaultTheme.SidebarItem
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const contentRoot = path.resolve(__dirname, '..') // 指向 docs 目录
+const contentRoot = path.resolve(__dirname, "../docs") // 指向 docs 目录
 
 const IGNORE_DIRS = new Set<string>([
     '.vitepress',
@@ -78,7 +78,7 @@ function buildItems(dir: string): SidebarItem[] {
     for (const d of dirs) {
         const children = buildItems(path.join(dir, d.name))
         if (children.length > 0) {
-            items.push({ text: d.name, collapsed: false, items: children })
+            items.push({ text: d.name, collapsed: true, items: children })
         }
     }
 
@@ -136,7 +136,7 @@ title: 全部目录
 > 本页由 \`sidebar.mts\` 自动生成，请勿手动修改。
 
 ${body}`
-    fs.writeFileSync(path.join(contentRoot, "./docs", INDEX_FILE), content, 'utf-8')
+    fs.writeFileSync(path.join(contentRoot, INDEX_FILE), content, 'utf-8')
 }
 
 export function generateSidebar(): SidebarItem[] {
