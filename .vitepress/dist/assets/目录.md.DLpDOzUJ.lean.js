@@ -1,0 +1,1 @@
+import{G as e,W as t,n,rt as r}from"./chunks/framework.CMPLvzN_.js";var i=JSON.parse(`{"title":"全部目录","description":"","frontmatter":{"title":"全部目录"},"headers":[],"relativePath":"目录.md","filePath":"目录.md"}`),a={name:`目录.md`};function o(n,i,a,o,s,c){return r(),t(`div`,null,[...i[0]||=[e("",3)]])}var s=n(a,[[`render`,o]]);export{i as __pageData,s as default};

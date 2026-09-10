@@ -1,0 +1,1 @@
+import{G as e,W as t,n,rt as r}from"./chunks/framework.CMPLvzN_.js";var i=JSON.parse(`{"title":"比例倍数问题","description":"","frontmatter":{},"headers":[],"relativePath":"数量关系/比例倍数.md","filePath":"数量关系/比例倍数.md"}`),a={name:`数量关系/比例倍数.md`};function o(n,i,a,o,s,c){return r(),t(`div`,null,[...i[0]||=[e("",9)]])}var s=n(a,[[`render`,o]]);export{i as __pageData,s as default};
