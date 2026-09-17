@@ -1,0 +1,8 @@
+/* 只作用于文档正文中的加粗文字 */
+.vp-doc strong {
+    /* color: #d14; */
+    background: linear-gradient(transparent 70%, #808080 30%);
+    font-weight: 700;
+    padding: 0 2px;
+    border-radius: 2px;
+}
