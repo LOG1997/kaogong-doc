@@ -3,6 +3,12 @@ import { generateSidebar, allIndexLink } from './sidebar.mts'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+    vite: {
+        define: {
+            // 在构建时注入当前时间戳
+            __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+        },
+    },
     title: "kaogong-doc",
     srcDir: 'docs',
     description: "kaogong-doc",
@@ -14,7 +20,8 @@ export default defineConfig({
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: 'Home', link: '/' },
-            { text: '全部目录', link: allIndexLink }
+            { text: '全部目录', link: allIndexLink },
+            { component: 'BuildTime' },
         ],
 
         // sidebar: [
