@@ -4,7 +4,7 @@ import { generateSidebar, allIndexLink } from './sidebar.mts'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     vite: {
-        // publicDir: '.vitepress/public',
+        publicDir: '../.vitepress/public',
         define: {
             // 在构建时注入当前时间戳
             __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
