@@ -4,6 +4,7 @@ import { generateSidebar, allIndexLink } from './sidebar.mts'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     vite: {
+        // publicDir: '.vitepress/public',
         define: {
             // 在构建时注入当前时间戳
             __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
@@ -11,6 +12,15 @@ export default defineConfig({
     },
     title: "kaogong-doc",
     srcDir: 'docs',
+    head: [
+        // 标准 favicon.ico (建议包含 16x16, 32x32, 48x48)
+        ['link', { rel: 'icon', type: 'image/x-icon', href: '/kaogong-doc/favicon.ico' }],
+        // 适用于现代浏览器的 PNG 图标
+        ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/kaogong-doc/favicon-32x32.png' }],
+        ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/kaogong-doc/favicon-16x16.png' }],
+        // 适用于 iOS 设备添加到主屏幕
+        ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
+    ],
     description: "kaogong-doc",
     base: '/kaogong-doc',
     markdown: {
