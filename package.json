@@ -22,6 +22,8 @@
     "devDependencies": {
         "@types/node": "^22.20.2",
         "markdown-it-mathjax3": "^4.3.2",
-        "vitepress": "2.0.0-alpha.20"
+        "pagefind": "^1.5.2",
+        "vitepress": "2.0.0-alpha.20",
+        "vitepress-plugin-pagefind": "^0.4.25"
     }
 }

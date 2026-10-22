@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitepress'
 import { generateSidebar, allIndexLink } from './sidebar.mts'
-
+import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     vite: {
         publicDir: '../.vitepress/public',
+        plugins: [pagefindPlugin()],
         define: {
             // 在构建时注入当前时间戳
             __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
