@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>极简计时 · 长按重置</title>
+    <link rel="icon" type="image/x-icon" href="/kaogong-doc/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -40,7 +41,7 @@
 
         /* 加大字号：最大 11rem，最小 6rem，超宽屏也友好 */
         .time-display {
-            font-size: clamp(6rem, 22vw, 11rem);
+            font-size: clamp(6rem, 22vw, 20rem);
             font-weight: 400;
             font-variant-numeric: tabular-nums;
             letter-spacing: 0.02em;
@@ -200,7 +201,7 @@
             let longPressTimer = null;         // 长按计时器 (setTimeout)
             let longPressAnimationId = null;   // 进度条动画帧 (requestAnimationFrame)
             let longPressStartTime = 0;        // 长按开始时间 (performance.now 或 Date.now)
-            const LONG_PRESS_DURATION = 2000;  // 3秒
+            const LONG_PRESS_DURATION = 1000;  // 3秒
             let longPressDidReset = false;     // 本次长按是否已经触发重置
 
             // ---------- 格式化时间 ----------
