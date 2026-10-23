@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简计时 · 长按重置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+            /* 防止进度条出现时抖动 */
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 680px;
+            gap: 1.8rem;
+            position: relative;
+        }
+
+        /* 加大字号：最大 11rem，最小 6rem，超宽屏也友好 */
+        .time-display {
+            font-size: clamp(6rem, 22vw, 11rem);
+            font-weight: 400;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+            text-align: center;
+            font-feature-settings: "tnum";
+            white-space: nowrap;
+            color: #ffffff;
+            text-shadow: 0 0 14px rgba(255, 255, 255, 0.18);
+            transition: transform 0.05s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1.5px solid #ffffff;
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 400;
+            padding: 0.7rem 2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            background: #000000;
+            min-width: 110px;
+            text-align: center;
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            background: #1a1a1a;
+            border-color: #ffffff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:active {
+            background: #2a2a2a;
+            transform: scale(0.97);
+        }
+
+        .btn-reset {
+            border-color: #aaaaaa;
+            color: #dddddd;
+        }
+
+        .btn-reset:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        /* 提示文案 */
+        .hint {
+            margin-top: 0.25rem;
+            font-size: 0.85rem;
+            color: #888888;
+            letter-spacing: 0.5px;
+            text-align: center;
+            border-top: 1px solid #222;
+            padding-top: 1.25rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .hint kbd {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 0.2rem 0.6rem;
+            font-family: inherit;
+            font-size: 0.85rem;
+            color: #cccccc;
+            margin: 0 2px;
+        }
+
+        /* ---------- 长按进度条 ---------- */
+        /* 进度条容器：固定在页面底部，细而优雅 */
+        .progress-bar-container {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            z-index: 1000;
+            pointer-events: none;
+            /* 不允许交互，只做展示 */
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+
+        .progress-bar-container.active {
+            opacity: 1;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: width 0.02s linear;
+            /* 与刷新频率接近，视觉平滑 */
+            will-change: width;
+        }
+
+        /* 可选的进度文字：暂时不加，保持极简 */
+    </style>
+</head>
+
+<body>
+    <div class="timer-container">
+        <!-- 时间显示：大字号 -->
+        <div class="time-display" id="display">00:00.00</div>
+
+        <!-- 操作按钮 -->
+        <div class="controls">
+            <button class="btn" id="startPauseBtn">开始</button>
+            <button class="btn btn-reset" id="resetBtn">重置</button>
+        </div>
+
+        <!-- 快捷键提示 -->
+        <div class="hint">
+            <kbd>单击空格</kbd> 开始 / 暂停 · <kbd>长按空格 3s</kbd> 重置
+        </div>
+    </div>
+
+    <!-- 长按进度条 (固定在底部) -->
+    <div class="progress-bar-container" id="progressContainer">
+        <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <script>
+        (function () {
+            // ---------- DOM ----------
+            const displayEl = document.getElementById('display');
+            const startPauseBtn = document.getElementById('startPauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+
+            // ---------- 计时状态 ----------
+            let isRunning = false;
+            let elapsedMs = 0;
+            let timerId = null;            // setInterval句柄
+            let lastStartTimestamp = 0;
+
+            // ---------- 长按状态 ----------
+            let spacePressed = false;          // 空格键是否按下（防止重复触发）
+            let longPressTimer = null;         // 长按计时器 (setTimeout)
+            let longPressAnimationId = null;   // 进度条动画帧 (requestAnimationFrame)
+            let longPressStartTime = 0;        // 长按开始时间 (performance.now 或 Date.now)
+            const LONG_PRESS_DURATION = 2000;  // 3秒
+            let longPressDidReset = false;     // 本次长按是否已经触发重置
+
+            // ---------- 格式化时间 ----------
+            function formatTime(ms) {
+                if (ms < 0) ms = 0;
+                const totalSeconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                const centiseconds = Math.floor((ms % 1000) / 10);
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
+            }
+
+            function updateDisplay() {
+                displayEl.textContent = formatTime(elapsedMs);
+            }
+
+            // ---------- 计时核心 (setInterval + Date.now) ----------
+            function tick() {
+                if (!isRunning) return;
+                const now = Date.now();
+                const delta = now - lastStartTimestamp;
+                elapsedMs += delta;
+                lastStartTimestamp = now;
+                updateDisplay();
+            }
+
+            function startTimer() {
+                if (isRunning) return;
+                isRunning = true;
+                startPauseBtn.textContent = '暂停';
+                lastStartTimestamp = Date.now();
+                timerId = setInterval(tick, 30);
+            }
+
+            function pauseTimer() {
+                if (!isRunning) return;
+                isRunning = false;
+                startPauseBtn.textContent = '开始';
+                if (timerId) {
+                    clearInterval(timerId);
+                    timerId = null;
+                }
+            }
+
+            function resetTimer() {
+                if (isRunning) {
+                    pauseTimer();
+                }
+                elapsedMs = 0;
+                updateDisplay();
+                startPauseBtn.textContent = '开始';
+                if (timerId) {
+                    clearInterval(timerId);
+                    timerId = null;
+                }
+            }
+
+            function toggleStartPause() {
+                if (isRunning) {
+                    pauseTimer();
+                } else {
+                    startTimer();
+                }
+            }
+
+            // ---------- 进度条动画 (基于 requestAnimationFrame) ----------
+            function updateProgressBar() {
+                if (!spacePressed) {
+                    // 如果空格已松开或未按下，隐藏进度条
+                    progressContainer.classList.remove('active');
+                    progressFill.style.width = '0%';
+                    if (longPressAnimationId) {
+                        cancelAnimationFrame(longPressAnimationId);
+                        longPressAnimationId = null;
+                    }
+                    return;
+                }
+
+                const now = performance.now();
+                const elapsed = now - longPressStartTime;
+                // 计算进度 0 ~ 1，最大为1
+                let progress = Math.min(elapsed / LONG_PRESS_DURATION, 1);
+                progressFill.style.width = (progress * 100) + '%';
+
+                if (progress >= 1) {
+                    // 已经达到3秒，重置由 setTimeout 完成，这里不需要额外操作
+                    // 但需要停止动画，因为进度条已满
+                    if (longPressAnimationId) {
+                        cancelAnimationFrame(longPressAnimationId);
+                        longPressAnimationId = null;
+                    }
+                    return;
+                }
+
+                // 继续下一帧
+                longPressAnimationId = requestAnimationFrame(updateProgressBar);
+            }
+
+            // ---------- 长按逻辑 ----------
+            function clearLongPressTimer() {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+                if (longPressAnimationId) {
+                    cancelAnimationFrame(longPressAnimationId);
+                    longPressAnimationId = null;
+                }
+                // 隐藏进度条
+                progressContainer.classList.remove('active');
+                progressFill.style.width = '0%';
+            }
+
+            function startLongPress() {
+                // 清理之前可能存在的计时器
+                clearLongPressTimer();
+
+                // 重置标记
+                longPressDidReset = false;
+
+                // 显示进度条容器
+                progressContainer.classList.add('active');
+                progressFill.style.width = '0%';
+
+                // 记录长按开始时间
+                longPressStartTime = performance.now();
+
+                // 启动进度条动画
+                if (longPressAnimationId) {
+                    cancelAnimationFrame(longPressAnimationId);
+                }
+                longPressAnimationId = requestAnimationFrame(updateProgressBar);
+
+                // 启动长按计时器: 3秒后重置
+                longPressTimer = setTimeout(() => {
+                    // 长按达到3秒 → 重置计时 (无论是否在计时中)
+                    resetTimer();
+                    longPressDidReset = true;
+
+                    // 进度条填满
+                    progressFill.style.width = '100%';
+
+                    // 停止动画和清理定时器
+                    if (longPressAnimationId) {
+                        cancelAnimationFrame(longPressAnimationId);
+                        longPressAnimationId = null;
+                    }
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+
+                    // 稍后隐藏进度条？为了视觉反馈，让进度条停留一小会儿，再隐藏
+                    setTimeout(() => {
+                        // 但用户可能还按着空格，我们需要判断是否仍按下
+                        if (!spacePressed) {
+                            progressContainer.classList.remove('active');
+                            progressFill.style.width = '0%';
+                        } else {
+                            // 如果还按着，保持进度条显示满格，但稍后松开时会隐藏
+                            // 但也不能一直显示，我们可以不自动隐藏，等松开时自然隐藏
+                        }
+                    }, 200);
+
+                    // 这里不重置空格状态，等 keyup 处理
+                }, LONG_PRESS_DURATION);
+            }
+
+            function cancelLongPress() {
+                clearLongPressTimer();
+                // 注意：如果已经触发了长按重置，longPressDidReset为true，在keyup中处理
+            }
+
+            // ---------- 键盘事件 ----------
+            function onKeyDown(e) {
+                if (e.code !== 'Space') return;
+                e.preventDefault();
+
+                // 忽略重复触发 (操作系统长按会持续触发keydown)
+                if (e.repeat) return;
+
+                // 如果空格已经按下，不重复处理
+                if (spacePressed) return;
+
+                spacePressed = true;
+
+                // 启动长按检测和进度条
+                startLongPress();
+            }
+
+            function onKeyUp(e) {
+                if (e.code !== 'Space') return;
+                e.preventDefault();
+
+                // 如果空格并未标记为按下，忽略
+                if (!spacePressed) return;
+
+                // 清除长按计时器和进度条
+                clearLongPressTimer();
+
+                // 判断是否已经通过长按触发了重置
+                if (longPressDidReset) {
+                    // 长按已重置，忽略本次单击操作
+                    longPressDidReset = false;
+                    spacePressed = false;
+                    // 确保进度条隐藏
+                    progressContainer.classList.remove('active');
+                    progressFill.style.width = '0%';
+                    return;
+                }
+
+                // 正常单击: 切换开始/暂停
+                toggleStartPause();
+
+                // 重置空格状态
+                spacePressed = false;
+            }
+
+            // 为了防止页面滚动，再拦截一次
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') e.preventDefault();
+            }, { passive: false });
+
+            // ---------- 绑定事件 ----------
+            startPauseBtn.addEventListener('click', toggleStartPause);
+            resetBtn.addEventListener('click', resetTimer);
+            window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keyup', onKeyUp);
+
+            // 页面失去焦点时，如果空格还按着（比如切窗口），确保取消长按并重置空格状态
+            window.addEventListener('blur', () => {
+                if (spacePressed) {
+                    spacePressed = false;
+                    clearLongPressTimer();
+                    // 注意：不触发重置，只是取消当前按键状态
+                }
+            });
+
+            // 初始化显示
+            updateDisplay();
+
+            // 为了视觉和性能，requestAnimationFrame 在页面隐藏时会暂停，但进度条影响不大
+            // 可考虑不用额外优化
+        })();
+    </script>
+</body>
+
+</html>
