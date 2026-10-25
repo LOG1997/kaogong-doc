@@ -10,6 +10,7 @@ export default defineConfig({
             // 在构建时注入当前时间戳
             __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
         },
+
     },
     title: "kaogong-doc",
     srcDir: 'docs',
@@ -34,7 +35,15 @@ export default defineConfig({
             { text: '全部目录', link: allIndexLink },
             { component: 'BuildTime' },
         ],
+        outline: {
+            // 将 level 设置为 [2, 3]，表示同时显示二级和三级标题
+            level: [2, 3],
 
+            // 或者，如果你希望显示从二级到六级的所有层级（包含三级）
+            // level: 'deep', 
+
+            label: '页面导航' // 这个是你当前看到的大纲标题，可按需保留
+        },
         // sidebar: [
         //     {
         //         text: 'Examples',
