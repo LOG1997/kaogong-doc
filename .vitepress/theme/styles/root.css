@@ -1,0 +1,8 @@
+:root {
+    --vp-c-important-front: #fff;
+    --vp-c-important-back: #d21ef6;
+    --vp-badge-important-border: transparent;
+    --vp-badge-important-text: var(--vp-c-important-front);
+    --vp-badge-important-bg: var(--vp-c-important-back);
+
+}
