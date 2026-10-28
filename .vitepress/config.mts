@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 import { generateSidebar, allIndexLink } from './sidebar.mts'
 import { pagefindPlugin } from 'vitepress-plugin-pagefind'
+import markdownItExtensible from 'markdown-it-extensible'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     vite: {
@@ -26,7 +27,20 @@ export default defineConfig({
     description: "kaogong-doc",
     base: '/kaogong-doc',
     markdown: {
-        math: true
+        math: true,
+        config: (md) => {
+            md.use(markdownItExtensible, {
+
+                injectStyles: false,
+                inlineDirectives: [
+                    {
+                        name: 'red',           // Markdown 里使用的标识
+                        className: 'red-underline', // 生成的 CSS 类名
+                        tag: 'span'            // 包裹文字的 HTML 标签
+                    }
+                ]
+            })
+        }
     },
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
