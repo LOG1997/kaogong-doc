@@ -8,6 +8,7 @@ type SidebarItem = DefaultTheme.SidebarItem
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const contentRoot = path.resolve(__dirname, "../docs") // 指向 docs 目录
+const whisContentRoot = path.resolve(__dirname, "../whis") // 错题本目录
 
 const IGNORE_DIRS = new Set<string>([
     '.vitepress',
@@ -36,9 +37,9 @@ function getTitle(filePath: string, fallback: string): string {
     } catch { }
     return fallback
 }
-function toUrl(fullPath: string, isIndex: boolean): string {
+function toUrl(fullPath: string, isIndex: boolean, contentRootPath: string): string {
     // 相对 contentRoot 的路径，如 "常识/人体/人体健康.md"
-    let rel = path.relative(contentRoot, fullPath).replace(/\\/g, '/')
+    let rel = path.relative(contentRootPath, fullPath).replace(/\\/g, '/')
 
     // 保险：万一 contentRoot 算错，把可能出现的 docs/ 前缀剥掉
     rel = rel.replace(/^docs\//, '')
@@ -86,7 +87,7 @@ function buildItems(dir: string): SidebarItem[] {
         const fullPath = path.join(dir, f.name)
         const relative = path.relative(contentRoot, fullPath).replace(/\\/g, '/')
         const isIndex = f.name === 'index.md'
-        const link = toUrl(fullPath, isIndex)
+        const link = toUrl(fullPath, isIndex, contentRoot)
         // const dirName = path.dirname(relative)
         // const link: string = isIndex
         //     ? dirName === '.'
@@ -149,6 +150,7 @@ export function generateSidebar(): SidebarItem[] {
         ...items
     ]
 }
+
 
 // 导出给 config 用，方便 nav 里引用
 export const allIndexLink = INDEX_LINK
