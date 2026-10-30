@@ -129,7 +129,6 @@ function renderItems(items: SidebarItem[], depth = 0): string {
  */
 function writeIndexPage(items: SidebarItem[]): void {
     const body = renderItems(items)
-    console.log('asdasdasd', body)
     const content = `---
 title: 全部目录
 ---

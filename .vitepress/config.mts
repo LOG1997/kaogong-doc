@@ -46,7 +46,7 @@ export default defineConfig({
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: 'Home', link: '/' },
-            { text: '理论目录', link: '/base' + allIndexLink },
+            { text: '理论知识', link: '/base' + allIndexLink },
             { text: '错难重薄', link: '/whis' },
             { component: 'BuildTime' },
         ],
