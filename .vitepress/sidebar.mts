@@ -7,8 +7,8 @@ import type { DefaultTheme } from 'vitepress'
 type SidebarItem = DefaultTheme.SidebarItem
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const contentRoot = path.resolve(__dirname, "../docs") // 指向 docs 目录
-const whisContentRoot = path.resolve(__dirname, "../whis") // 错题本目录
+const contentRoot = path.resolve(__dirname, "../docs/base") // 指向 docs 目录
+const whisContentRoot = path.resolve(__dirname, "../docs/whis") // 错题本目录
 
 const IGNORE_DIRS = new Set<string>([
     '.vitepress',
@@ -112,7 +112,8 @@ function renderItems(items: SidebarItem[], depth = 0): string {
     const indent = '  '.repeat(depth)
     for (const item of items) {
         if (item.link) {
-            out += `${indent}- [${item.text ?? item.link}](${item.link})\n`
+            const href = `/base${item.link}`.replace(/\/+/g, '/')
+            out += `${indent}- [${item.text ?? item.link}](${href})\n`
         } else if (item.text) {
             out += `${indent}- **${item.text}**\n`
         }
@@ -128,6 +129,7 @@ function renderItems(items: SidebarItem[], depth = 0): string {
  */
 function writeIndexPage(items: SidebarItem[]): void {
     const body = renderItems(items)
+    console.log('asdasdasd', body)
     const content = `---
 title: 全部目录
 ---
@@ -140,13 +142,22 @@ ${body}`
     fs.writeFileSync(path.join(contentRoot, INDEX_FILE), content, 'utf-8')
 }
 
-export function generateSidebar(): SidebarItem[] {
+export function generateBaseSidebar(): SidebarItem[] {
     const items = buildItems(contentRoot)
     writeIndexPage(items)
 
     // 在侧边栏顶部加一个入口
     return [
         { text: '📖 全部目录', link: INDEX_LINK },
+        ...items
+    ]
+}
+
+export function generateWhisSidebar(): SidebarItem[] {
+    const items = buildItems(whisContentRoot)
+
+    // 在侧边栏顶部加一个入口
+    return [
         ...items
     ]
 }

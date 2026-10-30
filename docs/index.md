@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: brand
       text: 笔记
-      link: /目录
+      link: /base/目录
     - theme: alt
       text: 去计时
       link: /timer.html

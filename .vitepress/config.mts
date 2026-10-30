@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress'
-import { generateSidebar, allIndexLink } from './sidebar.mts'
+import { generateBaseSidebar, generateWhisSidebar, allIndexLink } from './sidebar.mts'
 import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 import markdownItExtensible from 'markdown-it-extensible'
 // https://vitepress.dev/reference/site-config
@@ -46,8 +46,8 @@ export default defineConfig({
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: 'Home', link: '/' },
-            { text: '全部目录', link: allIndexLink },
-            { text: '错难重薄', link: '/no1错难重薄' },
+            { text: '理论目录', link: '/base' + allIndexLink },
+            { text: '错难重薄', link: '/whis' },
             { component: 'BuildTime' },
         ],
         outline: {
@@ -63,7 +63,17 @@ export default defineConfig({
         //         ]
         //     }
         // ],
-        sidebar: generateSidebar(),
+        // sidebar: generateSidebar('/base'),
+        sidebar: {
+            '/base': {
+                base: '/base',
+                items: generateBaseSidebar()
+            },
+            '/whis': {
+                base: '/whis',
+                items: generateWhisSidebar()
+            }
+        },
 
         socialLinks: [
             { icon: 'github', link: 'https://github.com/LOG1997/kaogong-doc' }
