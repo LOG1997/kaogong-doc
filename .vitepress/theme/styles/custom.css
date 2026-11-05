@@ -1,3 +1,12 @@
+.vp-doc strong {
+    font-weight: 900;
+    background-color: color-mix(in srgb, var(--vp-c-text-3) 40%, transparent);
+    padding: 2px 3px;
+    border-radius: 4px;
+    text-shadow: 0 0 0.5px var(--vp-c-text-3);
+}
+
+
 .vp-doc h2 {
     &::first-letter {
         font-size: 1.5em;
