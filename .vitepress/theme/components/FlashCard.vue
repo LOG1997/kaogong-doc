@@ -1,13 +1,13 @@
 <!-- docs/.vitepress/theme/components/IdiomCards.vue -->
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 
 interface Idiom {
-    word: string
-    meaning: string
-    tone: string
-    applicable: string
-    collocation: string
+  word: string
+  meaning: string
+  tone: string
+  applicable: string
+  collocation: string
 }
 
 const slotRef = ref<HTMLElement>()
@@ -15,152 +15,232 @@ const rows = ref<Idiom[]>([])
 const ready = ref(false)
 const keyword = ref('')
 
+// —— 弹窗状态 ——
+const activeItem = ref<Idiom | null>(null)
+
+function openDetail(item: Idiom) {
+  activeItem.value = item
+}
+function closeDetail() {
+  activeItem.value = null
+}
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && activeItem.value) closeDetail()
+}
+
+// 弹窗打开时锁背景滚动
+watch(activeItem, (val) => {
+  if (typeof document === 'undefined') return
+  document.body.style.overflow = val ? 'hidden' : ''
+})
+
 const TONE_TAGS: { key: string; cls: string }[] = [
-    { key: '褒义', cls: 'tag-good' },
-    { key: '积极', cls: 'tag-good' },
-    { key: '贬义', cls: 'tag-bad' },
-    { key: '消极', cls: 'tag-bad' },
-    { key: '中性', cls: 'tag-neutral' }
+  { key: '褒义', cls: 'tag-good' },
+  { key: '积极', cls: 'tag-good' },
+  { key: '贬义', cls: 'tag-bad' },
+  { key: '消极', cls: 'tag-bad' },
+  { key: '中性', cls: 'tag-neutral' }
 ]
 
 function stripTags(html: string): string {
-    return html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+  return html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
 }
 
 function htmlOf(el: Element | null): string {
-    return (el?.innerHTML || '').trim()
+  return (el?.innerHTML || '').trim()
 }
 
 function toneTags(tone: string): { text: string; cls: string }[] {
-    const plain = stripTags(tone)
-    if (!plain) return []
-    return TONE_TAGS
-        .filter(t => plain.includes(t.key))
-        .map(t => ({ text: t.key, cls: t.cls }))
+  const plain = stripTags(tone)
+  if (!plain) return []
+  return TONE_TAGS.filter(t => plain.includes(t.key)).map(t => ({ text: t.key, cls: t.cls }))
 }
 
 function toneClass(tone: string) {
-    const plain = stripTags(tone)
-    if (/贬义|消极/.test(plain)) return 'tone-bad'
-    if (/褒义|积极/.test(plain)) return 'tone-good'
-    return 'tone-neutral'
+  const plain = stripTags(tone)
+  if (/贬义|消极/.test(plain)) return 'tone-bad'
+  if (/褒义|积极/.test(plain)) return 'tone-good'
+  return 'tone-neutral'
 }
 
 type Block = { type: 'word'; el: Element } | { type: 'p'; el: Element }
 
 function collectBlocks(root: HTMLElement): Block[] {
-    const blocks: Block[] = []
-    const walk = (node: Element) => {
-        for (const child of Array.from(node.children)) {
-            const tag = child.tagName.toLowerCase()
-            if (tag === 'ul' || tag === 'ol') {
-                for (const li of Array.from(child.children)) {
-                    if (li.tagName.toLowerCase() === 'li') blocks.push({ type: 'word', el: li })
-                }
-            } else if (tag === 'p') {
-                blocks.push({ type: 'p', el: child })
-            } else if (['div', 'section', 'article'].includes(tag)) {
-                walk(child)
-            } else {
-                blocks.push({ type: 'p', el: child })
-            }
+  const blocks: Block[] = []
+  const walk = (node: Element) => {
+    for (const child of Array.from(node.children)) {
+      const tag = child.tagName.toLowerCase()
+      if (tag === 'ul' || tag === 'ol') {
+        for (const li of Array.from(child.children)) {
+          if (li.tagName.toLowerCase() === 'li') blocks.push({ type: 'word', el: li })
         }
+      } else if (tag === 'p') {
+        blocks.push({ type: 'p', el: child })
+      } else if (['div', 'section', 'article'].includes(tag)) {
+        walk(child)
+      } else {
+        blocks.push({ type: 'p', el: child })
+      }
     }
-    walk(root)
-    return blocks
+  }
+  walk(root)
+  return blocks
 }
 
 onMounted(() => {
-    const root = slotRef.value
-    if (!root) return
-
+  const root = slotRef.value
+  if (root) {
     const blocks = collectBlocks(root)
     const parsed: Idiom[] = []
     let current: Idiom | null = null
     let fieldIndex = 0
 
     const pushCurrent = () => {
-        if (current && stripTags(current.word)) parsed.push(current)
-        current = null
-        fieldIndex = 0
+      if (current && stripTags(current.word)) parsed.push(current)
+      current = null
+      fieldIndex = 0
     }
 
     for (const b of blocks) {
-        if (b.type === 'word') {
-            pushCurrent()
-            const wordHtml = htmlOf(b.el)
-            if (!stripTags(wordHtml)) continue
-            current = { word: wordHtml, meaning: '', tone: '', applicable: '', collocation: '' }
-            fieldIndex = 0
-        } else if (b.type === 'p' && current) {
-            const html = htmlOf(b.el)
-            if (!stripTags(html)) continue
-            if (fieldIndex === 0) current.meaning = html
-            else if (fieldIndex === 1) current.tone = html
-            else if (fieldIndex === 2) current.applicable = html
-            else if (fieldIndex === 3) current.collocation = html
-            fieldIndex++
-        }
+      if (b.type === 'word') {
+        pushCurrent()
+        const wordHtml = htmlOf(b.el)
+        if (!stripTags(wordHtml)) continue
+        current = { word: wordHtml, meaning: '', tone: '', applicable: '', collocation: '' }
+        fieldIndex = 0
+      } else if (b.type === 'p' && current) {
+        const html = htmlOf(b.el)
+        if (!stripTags(html)) continue
+        if (fieldIndex === 0) current.meaning = html
+        else if (fieldIndex === 1) current.tone = html
+        else if (fieldIndex === 2) current.applicable = html
+        else if (fieldIndex === 3) current.collocation = html
+        fieldIndex++
+      }
     }
     pushCurrent()
-
     rows.value = parsed
     ready.value = true
+  }
+
+  window.addEventListener('keydown', onKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
+  if (typeof document !== 'undefined') document.body.style.overflow = ''
 })
 
 const filtered = computed(() => {
-    const q = keyword.value.trim().toLowerCase()
-    if (!q) return rows.value
-    return rows.value.filter(r =>
-        [r.word, r.meaning, r.tone, r.applicable, r.collocation]
-            .map(v => stripTags(v).toLowerCase())
-            .some(v => v.includes(q))
-    )
+  const q = keyword.value.trim().toLowerCase()
+  if (!q) return rows.value
+  return rows.value.filter(r =>
+    [r.word, r.meaning, r.tone, r.applicable, r.collocation]
+      .map(v => stripTags(v).toLowerCase())
+      .some(v => v.includes(q))
+  )
 })
 </script>
 
 <template>
-    <div class="idiom-cards">
-        <div v-if="ready" class="idiom-search">
-            <input v-model="keyword" type="search" class="idiom-search-input" placeholder="搜索词语、含义、感情色彩、适用对象、搭配…"
-                aria-label="搜索成语" />
-            <span class="idiom-count">{{ filtered.length }} / {{ rows.length }}</span>
-        </div>
-
-        <div ref="slotRef" class="idiom-source" :class="{ 'is-hidden': ready }">
-            <slot />
-        </div>
-
-        <div v-if="ready" class="idiom-grid">
-            <div v-for="r in filtered" :key="stripTags(r.word)" class="idiom-card">
-                <div class="idiom-word" v-html="r.word"></div>
-                <div v-if="r.meaning" class="idiom-row">
-                    <span class="idiom-label label-meaning">义</span>
-                    <span class="idiom-val" v-html="r.meaning"></span>
-                </div>
-                <div v-if="r.tone" class="idiom-row" :class="toneClass(r.tone)">
-                    <span class="idiom-label label-tone">色</span>
-                    <span class="idiom-val">
-                        <span v-for="t in toneTags(r.tone)" :key="t.text" class="tone-tag" :class="t.cls">{{ t.text
-                            }}</span>
-                        <span class="tone-text" v-html="r.tone"></span>
-                    </span>
-                </div>
-                <div v-if="r.applicable" class="idiom-row">
-                    <span class="idiom-label label-applicable">用</span>
-                    <span class="idiom-val" v-html="r.applicable"></span>
-                </div>
-                <div v-if="r.collocation" class="idiom-row">
-                    <span class="idiom-label label-collocation">搭</span>
-                    <span class="idiom-val" v-html="r.collocation"></span>
-                </div>
-            </div>
-        </div>
-
-        <p v-if="ready && filtered.length === 0" class="idiom-empty">
-            没有匹配「{{ keyword }}」的成语
-        </p>
+  <div class="idiom-cards">
+    <div v-if="ready" class="idiom-search">
+      <input
+        v-model="keyword"
+        type="search"
+        class="idiom-search-input"
+        placeholder="搜索词语、含义、感情色彩、适用对象、搭配…"
+        aria-label="搜索成语"
+      />
+      <span class="idiom-count">{{ filtered.length }} / {{ rows.length }}</span>
     </div>
+
+    <div ref="slotRef" class="idiom-source" :class="{ 'is-hidden': ready }">
+      <slot />
+    </div>
+
+    <div v-if="ready" class="idiom-grid">
+      <div
+        v-for="r in filtered"
+        :key="stripTags(r.word)"
+        class="idiom-card"
+        role="button"
+        tabindex="0"
+        @click="openDetail(r)"
+        @keydown.enter="openDetail(r)"
+      >
+        <div class="idiom-word" v-html="r.word"></div>
+        <div v-if="r.meaning" class="idiom-row">
+          <span class="idiom-label label-meaning">义</span>
+          <span class="idiom-val" v-html="r.meaning"></span>
+        </div>
+        <div v-if="r.tone" class="idiom-row" :class="toneClass(r.tone)">
+          <span class="idiom-label label-tone">色</span>
+          <span class="idiom-val">
+            <span
+              v-for="t in toneTags(r.tone)"
+              :key="t.text"
+              class="tone-tag"
+              :class="t.cls"
+            >{{ t.text }}</span>
+            <span class="tone-text" v-html="r.tone"></span>
+          </span>
+        </div>
+        <div v-if="r.applicable" class="idiom-row">
+          <span class="idiom-label label-applicable">用</span>
+          <span class="idiom-val" v-html="r.applicable"></span>
+        </div>
+        <div v-if="r.collocation" class="idiom-row">
+          <span class="idiom-label label-collocation">搭</span>
+          <span class="idiom-val" v-html="r.collocation"></span>
+        </div>
+      </div>
+    </div>
+
+    <p v-if="ready && filtered.length === 0" class="idiom-empty">
+      没有匹配「{{ keyword }}」的成语
+    </p>
+
+    <!-- 详情弹窗 -->
+    <Teleport to="body">
+      <Transition name="idiom-modal">
+        <div
+          v-if="activeItem"
+          class="idiom-modal-mask"
+          @click.self="closeDetail"
+        >
+          <div class="idiom-modal-panel" role="dialog" aria-modal="true">
+            <button class="idiom-modal-close" @click="closeDetail" aria-label="关闭">×</button>
+            <div class="idiom-modal-word" v-html="activeItem.word"></div>
+            <div v-if="activeItem.meaning" class="idiom-modal-field">
+              <span class="idiom-label label-meaning">义</span>
+              <div class="idiom-modal-val" v-html="activeItem.meaning"></div>
+            </div>
+            <div v-if="activeItem.tone" class="idiom-modal-field" :class="toneClass(activeItem.tone)">
+              <span class="idiom-label label-tone">色</span>
+              <div class="idiom-modal-val">
+                <span
+                  v-for="t in toneTags(activeItem.tone)"
+                  :key="t.text"
+                  class="tone-tag"
+                  :class="t.cls"
+                >{{ t.text }}</span>
+                <span class="tone-text" v-html="activeItem.tone"></span>
+              </div>
+            </div>
+            <div v-if="activeItem.applicable" class="idiom-modal-field">
+              <span class="idiom-label label-applicable">用</span>
+              <div class="idiom-modal-val" v-html="activeItem.applicable"></div>
+            </div>
+            <div v-if="activeItem.collocation" class="idiom-modal-field">
+              <span class="idiom-label label-collocation">搭</span>
+              <div class="idiom-modal-val" v-html="activeItem.collocation"></div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+  </div>
 </template>
 
 <style>
@@ -345,5 +425,110 @@ const filtered = computed(() => {
     color: var(--vp-c-text-2);
     font-size: 13px;
     margin-top: 12px;
+}
+
+/* 卡片可点击 */
+.idiom-card {
+  cursor: pointer;
+}
+.idiom-card:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+/* 弹窗遮罩 */
+.idiom-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, .45);
+  backdrop-filter: blur(2px);
+}
+
+/* 弹窗面板 */
+.idiom-modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px 22px;
+  border-radius: 10px;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+}
+.idiom-modal-word {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+}
+.idiom-modal-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.idiom-modal-field .idiom-label {
+  width: 18px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.idiom-modal-val {
+  flex: 1;
+  color: var(--vp-c-text-2);
+  word-break: break-word;
+}
+.idiom-modal-field.tone-good .tone-text { color: var(--vp-c-green-1); }
+.idiom-modal-field.tone-bad .tone-text { color: var(--vp-c-yellow-1); }
+.idiom-modal-field.tone-neutral .tone-text { color: var(--vp-c-text-2); }
+
+/* 关闭按钮 */
+.idiom-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  line-height: 1;
+  font-size: 20px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.idiom-modal-close:hover {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-1);
+}
+
+/* 过渡动画 */
+.idiom-modal-enter-active,
+.idiom-modal-leave-active {
+  transition: opacity .18s ease;
+}
+.idiom-modal-enter-active .idiom-modal-panel,
+.idiom-modal-leave-active .idiom-modal-panel {
+  transition: transform .18s ease;
+}
+.idiom-modal-enter-from,
+.idiom-modal-leave-to {
+  opacity: 0;
+}
+.idiom-modal-enter-from .idiom-modal-panel,
+.idiom-modal-leave-to .idiom-modal-panel {
+  transform: translateY(8px) scale(.98);
 }
 </style>
