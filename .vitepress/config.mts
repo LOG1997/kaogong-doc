@@ -2,16 +2,22 @@ import { defineConfig } from 'vitepress'
 import { generateBaseSidebar, generateWhisSidebar, allIndexLink } from './sidebar.mts'
 import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 import markdownItExtensible from 'markdown-it-extensible'
+import { withMermaid } from 'vitepress-mermaid-plugin'
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withMermaid(defineConfig({
     vite: {
         publicDir: '../.vitepress/public',
-        plugins: [pagefindPlugin()],
+        plugins: [
+            pagefindPlugin(),
+            // mermaidPlugin(),
+        ],
         define: {
             // 在构建时注入当前时间戳
             __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
         },
-
+        optimizeDeps: {
+            include: ['dayjs', 'mermaid']
+        }
     },
     title: "kaogong-doc",
     srcDir: 'docs',
@@ -80,3 +86,4 @@ export default defineConfig({
         ]
     }
 })
+)
