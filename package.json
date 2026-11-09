@@ -20,10 +20,9 @@
     "homepage": "https://github.com/LOG1997/kaogong-doc#readme",
     "description": "",
     "devDependencies": {
-        "@types/node": "^26.6.6",
-        "@vitepress-plugin/mermaid": "^1.0.0",
+        "@types/node": "^22.20.2",
         "dayjs": "^1.11.23",
-        "markdown-it-mathjax3": "5.2.0",
+        "markdown-it-mathjax3": "^4.3.2",
         "mermaid": "^12.3.0",
         "pagefind": "^1.5.2",
         "vitepress": "2.0.0-alpha.20",

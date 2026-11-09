@@ -3,6 +3,7 @@ import { generateBaseSidebar, generateWhisSidebar, allIndexLink } from './sideba
 import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 import markdownItExtensible from 'markdown-it-extensible'
 import { withMermaid } from 'vitepress-mermaid-plugin'
+// import mermaidPlugin from '@vitepress-plugin/mermaid'
 // https://vitepress.dev/reference/site-config
 export default withMermaid(defineConfig({
     vite: {
