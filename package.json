@@ -21,7 +21,9 @@
     "description": "",
     "devDependencies": {
         "@types/node": "^22.20.2",
+        "@vite-pwa/vitepress": "^2.0.3",
         "dayjs": "^1.11.23",
+        "magicast": "^0.5.5",
         "markdown-it-mathjax3": "^4.3.2",
         "mermaid": "^12.3.0",
         "pagefind": "^1.5.2",

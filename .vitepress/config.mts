@@ -3,9 +3,38 @@ import { generateBaseSidebar, generateWhisSidebar, allIndexLink } from './sideba
 import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 import markdownItExtensible from 'markdown-it-extensible'
 import { withMermaid } from 'vitepress-mermaid-plugin'
+import { withPwa } from '@vite-pwa/vitepress'
 // import mermaidPlugin from '@vitepress-plugin/mermaid'
 // https://vitepress.dev/reference/site-config
-export default withMermaid(defineConfig({
+export default withPwa(withMermaid(defineConfig({
+    pwa: {
+        outDir: '/.vitepress/dist',
+        manifest: {
+            name: 'kaogong-doc',
+            short_name: 'kd',
+            description: 'mkda',
+            theme_color: '#ffffff',
+            background_color: '#ffffff',
+            icons: [
+                // 需要你准备实际存在的图标文件
+                {
+                    src: '/kaogong-doc/pwa-192x192.png', // 注意你的 base 路径
+                    sizes: '192x192',
+                    type: 'image/png'
+                },
+                {
+                    src: '/kaogong-doc/pwa-512x512.png',
+                    sizes: '512x512',
+                    type: 'image/png'
+                }
+            ]
+        },
+        // 可选：Workbox 缓存策略配置
+        workbox: {
+            globDirectory: '.vitepress/dist',
+            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'], // 默认缓存的文件类型
+        }
+    },
     vite: {
         publicDir: '../.vitepress/public',
         plugins: [
@@ -87,4 +116,5 @@ export default withMermaid(defineConfig({
         ]
     }
 })
+)
 )
