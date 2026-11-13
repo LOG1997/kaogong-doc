@@ -1,11 +1,37 @@
 .vp-doc strong {
-    font-weight: 900;
-    background-color: color-mix(in srgb, var(--vp-c-text-3) 40%, transparent);
+    font-weight: 700;
+    background: linear-gradient(90deg,
+            rgba(96, 132, 176, .24),
+            rgba(140, 116, 168, .24),
+            rgba(176, 120, 140, .24),
+            rgba(176, 148, 100, .24),
+            rgba(96, 132, 176, .24));
+    background-size: 200% 100%;
+    animation: strong-gradient 6s linear infinite;
     padding: 2px 3px;
     border-radius: 4px;
     text-shadow: 0 0 0.5px var(--vp-c-text-3);
 }
 
+.dark .vp-doc strong {
+    background: linear-gradient(90deg,
+            rgba(96, 165, 250, .25),
+            rgba(167, 139, 250, .25),
+            rgba(244, 114, 182, .25),
+            rgba(96, 165, 250, .25));
+    background-size: 200% 100%;
+    animation: strong-gradient 6s linear infinite;
+}
+
+@keyframes strong-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 200% 50%;
+    }
+}
 
 .vp-doc h2 {
     &::first-letter {

@@ -47,5 +47,9 @@ features:
   - title: 常识积累
     details: 常识积累模块
     link: /base/常识
-    
+  
+  - title: 政治理论
+    details: 政治理论模块
+    link: /base/政治理论
+
 ---
