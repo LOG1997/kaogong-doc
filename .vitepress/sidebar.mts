@@ -235,7 +235,7 @@ ${body}
 
 export function generateBaseSidebar(): SidebarItem[] {
 
-    writeAllDirIndexes(contentRoot)
+    writeAllDirIndexes(contentRoot, true)
     const items = buildItems(contentRoot)
     writeIndexPage(items)
 
