@@ -11,7 +11,7 @@ title: 申论目录
     <details>
       <summary><strong>对策</strong></summary>
       <ul>
-        <li><a href="/base/申论/对策/对策">对策</a></li>
+        <li><a href="/kaogong-doc/base/申论/对策/对策">对策</a></li>
       </ul>
     </details>
   </li>
@@ -19,7 +19,7 @@ title: 申论目录
     <details>
       <summary><strong>公文</strong></summary>
       <ul>
-        <li><a href="/base/申论/公文/公文">公文</a></li>
+        <li><a href="/kaogong-doc/base/申论/公文/公文">公文</a></li>
       </ul>
     </details>
   </li>
@@ -31,7 +31,7 @@ title: 申论目录
           <details>
             <summary><strong>范文</strong></summary>
             <ul>
-              <li><a href="/base/申论/作文/范文/2025四川县乡范文-粉笔">2025四川县乡范文-粉笔</a></li>
+              <li><a href="/kaogong-doc/base/申论/作文/范文/2025四川县乡范文-粉笔">2025四川县乡范文-粉笔</a></li>
             </ul>
           </details>
         </li>
@@ -39,16 +39,16 @@ title: 申论目录
           <details>
             <summary><strong>自作文</strong></summary>
             <ul>
-              <li><a href="/base/申论/作文/自作文/第一篇">第一篇</a></li>
+              <li><a href="/kaogong-doc/base/申论/作文/自作文/第一篇">第一篇</a></li>
             </ul>
           </details>
         </li>
-        <li><a href="/base/申论/作文/申论大作文-张小龙">申论大作文-张小龙</a></li>
-        <li><a href="/base/申论/作文/作文">作文</a></li>
+        <li><a href="/kaogong-doc/base/申论/作文/申论大作文-张小龙">申论大作文-张小龙</a></li>
+        <li><a href="/kaogong-doc/base/申论/作文/作文">作文</a></li>
       </ul>
     </details>
   </li>
-  <li><a href="/base/申论/写作格式">写作格式</a></li>
+  <li><a href="/kaogong-doc/base/申论/写作格式">写作格式</a></li>
 </ul>
 
 

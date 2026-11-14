@@ -11,7 +11,7 @@ title: 政治理论目录
     <details>
       <summary><strong>36计</strong></summary>
       <ul>
-        <li><a href="/base/政治理论/36计/经济">经济</a></li>
+        <li><a href="/kaogong-doc/base/政治理论/36计/经济">经济</a></li>
       </ul>
     </details>
   </li>
@@ -19,12 +19,12 @@ title: 政治理论目录
     <details>
       <summary><strong>排坑内容</strong></summary>
       <ul>
-        <li><a href="/base/政治理论/排坑内容/新思想">新思想</a></li>
+        <li><a href="/kaogong-doc/base/政治理论/排坑内容/新思想">新思想</a></li>
       </ul>
     </details>
   </li>
-  <li><a href="/base/政治理论/1.导论">1.导论</a></li>
-  <li><a href="/base/政治理论/马哲">马哲</a></li>
+  <li><a href="/kaogong-doc/base/政治理论/1.导论">1.导论</a></li>
+  <li><a href="/kaogong-doc/base/政治理论/马哲">马哲</a></li>
 </ul>
 
 

@@ -114,7 +114,7 @@ function renderItems(items: SidebarItem[], depth = 0): string {
 
     for (const item of items) {
         if (item.link) {
-            const href = `/base${item.link}`.replace(/\/+/g, '/')
+            const href = `/kaogong-doc/base${item.link}`.replace(/\/+/g, '/')
             out += `${pad}  <li><a href="${href}">${item.text ?? item.link}</a></li>\n`
         } else if (item.text && item.items && item.items.length > 0) {
             out += `${pad}  <li class="toc-branch">\n`
