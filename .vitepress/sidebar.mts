@@ -70,8 +70,9 @@ function buildItems(dir: string, extraIgnore: string[] = []): SidebarItem[] {
 
     dirs.sort((a, b) => a.name.localeCompare(b.name, 'zh'))
     files.sort((a, b) => {
-        if (a.name === 'index.md') return -1
-        if (b.name === 'index.md') return 1
+        const aIsIndex = a.name === 'index.md'
+        const bIsIndex = b.name === 'index.md'
+        if (aIsIndex !== bIsIndex) return aIsIndex ? 1 : -1   // index.md 排最后
         return a.name.localeCompare(b.name, 'zh')
     })
 

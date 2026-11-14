@@ -36,9 +36,9 @@ title: 常识目录
     <details>
       <summary><strong>科技</strong></summary>
       <ul>
-        <li><a href="/kaogong-doc/base/常识/科技/">概述</a></li>
         <li><a href="/kaogong-doc/base/常识/科技/天文">天文</a></li>
         <li><a href="/kaogong-doc/base/常识/科技/物理">物理</a></li>
+        <li><a href="/kaogong-doc/base/常识/科技/">概述</a></li>
       </ul>
     </details>
   </li>

@@ -71,8 +71,8 @@ title: 判断推理目录
             </ul>
           </details>
         </li>
-        <li><a href="/kaogong-doc/base/判断推理/图形推理/">概述</a></li>
         <li><a href="/kaogong-doc/base/判断推理/图形推理/刘义恒图推">刘义恒图推</a></li>
+        <li><a href="/kaogong-doc/base/判断推理/图形推理/">概述</a></li>
       </ul>
     </details>
   </li>
