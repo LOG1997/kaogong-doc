@@ -50,7 +50,7 @@ function toUrl(fullPath: string, isIndex: boolean, contentRootPath: string): str
     }
     return `/${rel.replace(/\.md$/, '')}`
 }
-function buildItems(dir: string, extraIgnore: string[] = []): SidebarItem[] {
+function buildItems(dir: string, extraIgnore: string[] = [], root: string = contentRoot): SidebarItem[] {
     const ignoreFiles = new Set([...IGNORE_FILES, ...extraIgnore])
     const entries = fs.readdirSync(dir, { withFileTypes: true })
     const dirs: fs.Dirent[] = []
@@ -72,14 +72,15 @@ function buildItems(dir: string, extraIgnore: string[] = []): SidebarItem[] {
     files.sort((a, b) => {
         const aIsIndex = a.name === 'index.md'
         const bIsIndex = b.name === 'index.md'
-        if (aIsIndex !== bIsIndex) return aIsIndex ? 1 : -1   // index.md 排最后
+        if (aIsIndex !== bIsIndex) return aIsIndex ? 1 : -1
         return a.name.localeCompare(b.name, 'zh')
     })
 
     const items: SidebarItem[] = []
 
     for (const d of dirs) {
-        const children = buildItems(path.join(dir, d.name))
+        // 递归时把 root 透传下去
+        const children = buildItems(path.join(dir, d.name), [], root)
         if (children.length > 0) {
             items.push({ text: d.name, collapsed: true, items: children })
         }
@@ -87,19 +88,11 @@ function buildItems(dir: string, extraIgnore: string[] = []): SidebarItem[] {
 
     for (const f of files) {
         const fullPath = path.join(dir, f.name)
-        const relative = path.relative(contentRoot, fullPath).replace(/\\/g, '/')
         const isIndex = f.name === 'index.md'
-        const link = toUrl(fullPath, isIndex, contentRoot)
-        // const dirName = path.dirname(relative)
-        // const link: string = isIndex
-        //     ? dirName === '.'
-        //         ? '/'
-        //         : `/${dirName}/`
-        //     : `/${relative.replace(/\.md$/, '')}`
-
+        // 用 root 计算相对路径，而不是全局 contentRoot
+        const link = toUrl(fullPath, isIndex, root)
         const fallbackText = isIndex ? '概述' : f.name.replace(/\.md$/, '')
         const text = getTitle(fullPath, fallbackText)
-
         items.push({ text, link })
     }
 
@@ -248,9 +241,8 @@ export function generateBaseSidebar(): SidebarItem[] {
 }
 
 export function generateWhisSidebar(): SidebarItem[] {
-    const items = buildItems(whisContentRoot)
-
-    // 在侧边栏顶部加一个入口
+    // 第三个参数传 whisContentRoot，让 link 相对于 whis 根目录
+    const items = buildItems(whisContentRoot, [], whisContentRoot)
     return [
         ...items
     ]

@@ -6,7 +6,9 @@ import './styles/root.css'
 import FlashCard from './components/FlashCard.vue'
 import FlashCompare from './components/FlashCompare.vue'
 import RegisterSW from './components/RegisterSW.vue'
+import WhisCards from './components/WhisCards.vue'
 import { h } from 'vue'
+
 export default {
     extends: DefaultTheme,
     Layout() {
@@ -18,6 +20,7 @@ export default {
         // 全局注册自定义组件
         app.component('BuildTime', BuildTime),
             app.component('FlashCard', FlashCard),
-            app.component('FlashCompare', FlashCompare)
+            app.component('FlashCompare', FlashCompare),
+            app.component('WhisCards', WhisCards)
     },
 }

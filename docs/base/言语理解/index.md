@@ -40,7 +40,8 @@ title: 言语理解目录
     <details>
       <summary><strong>逻辑填空</strong></summary>
       <ul>
-        <li><a href="/kaogong-doc/base/言语理解/逻辑填空/粉笔——逻辑填空">粉笔——逻辑填空</a></li>
+        <li><a href="/kaogong-doc/base/言语理解/逻辑填空/36计-逻辑填空">36计-逻辑填空</a></li>
+        <li><a href="/kaogong-doc/base/言语理解/逻辑填空/粉笔—赵晓曦—逻辑填空">粉笔—赵晓曦—逻辑填空</a></li>
         <li><a href="/kaogong-doc/base/言语理解/逻辑填空/逻辑填空">逻辑填空</a></li>
       </ul>
     </details>
