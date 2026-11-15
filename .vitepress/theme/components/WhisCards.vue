@@ -31,7 +31,7 @@ const ALIASES = {
     tags: ['标签'],
     knowledge: ['要点', '知识点'],
     feature: ['特点', '特征'],
-    method: ['方法', '解法'],
+    method: ['方法', '解法', '做法'],
     reason: ['错因', '做错原因', '错误原因'],
     reflection: ['反思', '总结'],
     screenshot: ['题目', '截图', '图片', '题图']
@@ -51,7 +51,8 @@ function htmlOf(el: Element | null): string {
 
 function extractField(li: HTMLElement): { key: string; value: string } | null {
     const clone = li.cloneNode(true) as HTMLElement
-    clone.querySelectorAll('ul, ol').forEach(el => el.remove())
+    // 删除这一行：
+    // clone.querySelectorAll('ul, ol').forEach(el => el.remove())
 
     const blocks: string[] = []
     for (const child of Array.from(clone.childNodes)) {
@@ -81,14 +82,19 @@ function extractField(li: HTMLElement): { key: string; value: string } | null {
     const restOfFirst = firstBlock.slice(colonIdx + 1).replace(/^[：:\s]+/, '').trim()
 
     const parts: string[] = []
-    if (restOfFirst) parts.push(`<p>${restOfFirst}</p>`)
+    if (restOfFirst) parts.push(wrapBlock(restOfFirst))
     for (let i = 1; i < blocks.length; i++) {
-        parts.push(`<p>${blocks[i]}</p>`)
+        parts.push(wrapBlock(blocks[i]))
     }
 
     return { key, value: parts.join('') }
 }
-
+function wrapBlock(s: string): string {
+    const t = s.trim()
+    if (!t) return ''
+    if (/^<(p|div|ul|ol|blockquote|pre|table|h[1-6])\b/i.test(t)) return t
+    return `<p>${t}</p>`
+}
 function parseTags(html: string): string[] {
     return stripTags(html)
         .split(/[,，、;；\s]+/)
@@ -661,6 +667,28 @@ function tagClass(t: string) {
 
 .whis-val strong {
     color: var(--vp-c-text-1);
+}
+
+.whis-val ol,
+.whis-val ul {
+    margin: 4px 0;
+    padding-left: 20px;
+}
+
+.whis-val ol li,
+.whis-val ul li {
+    margin: 2px 0;
+}
+
+.whis-modal-val ol,
+.whis-modal-val ul {
+    margin: 4px 0;
+    padding-left: 20px;
+}
+
+.whis-modal-val ol li,
+.whis-modal-val ul li {
+    margin: 2px 0;
 }
 
 .whis-question {

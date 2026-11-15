@@ -11,6 +11,9 @@ importers:
       markdown-it-extensible:
         specifier: ^1.4.0
         version: 1.4.0
+      vitepress-plugin-back2top:
+        specifier: ^0.1.6
+        version: 0.1.6(vitepress@2.0.0-alpha.20(@types/node@22.20.5)(markdown-it-mathjax3@4.3.2)(postcss@8.5.28))(vue@3.5.44)
       vue:
         specifier: ^3.5.44
         version: 3.5.44
@@ -1496,6 +1499,12 @@ packages:
     peerDependencies:
       mermaid: 10 || 11
       vitepress: ^1.0.0 || ^1.0.0-alpha || ^2.0.0 || ^2.0.0-alpha
+
+  vitepress-plugin-back2top@0.1.6:
+    resolution: {integrity: sha512-nkxTMI2YNKNe82DAZe39jcWg8gNii6kvzmRUQWF+cA+zNM6fbxOrPqmKMT9/lIZzNmlQYPJW1bLm3Nbg1TwIjQ==}
+    peerDependencies:
+      vitepress: ^1.0.0-0 || ^2.0.0-0
+      vue: ^3.3.0
 
   vitepress-plugin-pagefind@0.4.25:
     resolution: {integrity: sha512-hlKGCyVXjjtMYM7V6PcP9NVrahzskPrahi2U2zjnWewSaZFHNbjh3kZr9ThQZ+m+y8zFp9v65ooyHZX58mBhkQ==}
@@ -2985,6 +2994,14 @@ snapshots:
       vitepress: 2.0.0-alpha.20(@types/node@22.20.5)(markdown-it-mathjax3@4.3.2)(postcss@8.5.28)
     optionalDependencies:
       '@mermaid-js/mermaid-mindmap': 9.3.0
+
+  vitepress-plugin-back2top@0.1.6(vitepress@2.0.0-alpha.20(@types/node@22.20.5)(markdown-it-mathjax3@4.3.2)(postcss@8.5.28))(vue@3.5.44):
+    dependencies:
+      '@sugarat/theme-shared': 0.1.0
+      '@vueuse/core': 15.0.0(vue@3.5.44)
+      javascript-stringify: 2.1.0
+      vitepress: 2.0.0-alpha.20(@types/node@22.20.5)(markdown-it-mathjax3@4.3.2)(postcss@8.5.28)
+      vue: 3.5.44
 
   vitepress-plugin-pagefind@0.4.25(pagefind@1.5.2)(vitepress@2.0.0-alpha.20(@types/node@22.20.5)(markdown-it-mathjax3@4.3.2)(postcss@8.5.28))(vue@3.5.44):
     dependencies:

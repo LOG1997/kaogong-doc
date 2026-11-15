@@ -4,6 +4,8 @@ import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 import markdownItExtensible from 'markdown-it-extensible'
 import { withMermaid } from 'vitepress-mermaid-plugin'
 import { withPwa } from '@vite-pwa/vitepress'
+import { back2topPlugin } from 'vitepress-plugin-back2top'
+
 // import mermaidPlugin from '@vitepress-plugin/mermaid'
 // https://vitepress.dev/reference/site-config
 export default withPwa(withMermaid(defineConfig({
@@ -38,6 +40,10 @@ export default withPwa(withMermaid(defineConfig({
     vite: {
         publicDir: '../.vitepress/public',
         plugins: [
+            back2topPlugin({
+                top: 400, // 滚动多少像素后出现，默认 450[reference:1]
+                iconSize: 24, // 图标大小，默认 20[reference:2]
+            }),
             pagefindPlugin(),
             // mermaidPlugin(),
         ],
@@ -83,7 +89,7 @@ export default withPwa(withMermaid(defineConfig({
         nav: [
             { text: '首页', link: '/' },
             { text: '理论知识', link: '/base' + allIndexLink },
-            { text: '错难重薄', link: '/whis' },
+            { text: '错难重薄', link: '/whis', activeMatch: '/whis/' },
             { component: 'BuildTime' },
         ],
         outline: {
