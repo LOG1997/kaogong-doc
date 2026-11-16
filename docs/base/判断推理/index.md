@@ -54,6 +54,7 @@ title: 判断推理目录
     <details>
       <summary><strong>图形推理</strong></summary>
       <ul>
+        <li><a href="/kaogong-doc/base/判断推理/图形推理/">概述</a></li>
         <li class="toc-branch">
           <details>
             <summary><strong>立体图推</strong></summary>
@@ -72,7 +73,6 @@ title: 判断推理目录
           </details>
         </li>
         <li><a href="/kaogong-doc/base/判断推理/图形推理/刘义恒图推">刘义恒图推</a></li>
-        <li><a href="/kaogong-doc/base/判断推理/图形推理/">概述</a></li>
       </ul>
     </details>
   </li>

@@ -55,6 +55,7 @@ function buildItems(dir: string, extraIgnore: string[] = [], root: string = cont
     const entries = fs.readdirSync(dir, { withFileTypes: true })
     const dirs: fs.Dirent[] = []
     const files: fs.Dirent[] = []
+    let indexFile: fs.Dirent | null = null
 
     for (const entry of entries) {
         if (entry.name.startsWith('.')) continue
@@ -64,34 +65,40 @@ function buildItems(dir: string, extraIgnore: string[] = [], root: string = cont
             dirs.push(entry)
         } else if (entry.isFile() && entry.name.endsWith('.md')) {
             if (ignoreFiles.has(entry.name)) continue
-            files.push(entry)
+            if (entry.name === 'index.md') {
+                indexFile = entry
+            } else {
+                files.push(entry)
+            }
         }
     }
 
     dirs.sort((a, b) => a.name.localeCompare(b.name, 'zh'))
-    files.sort((a, b) => {
-        const aIsIndex = a.name === 'index.md'
-        const bIsIndex = b.name === 'index.md'
-        if (aIsIndex !== bIsIndex) return aIsIndex ? 1 : -1
-        return a.name.localeCompare(b.name, 'zh')
-    })
+    files.sort((a, b) => a.name.localeCompare(b.name, 'zh'))
 
     const items: SidebarItem[] = []
 
+    // 1. index.md 最先
+    if (indexFile) {
+        const fullPath = path.join(dir, indexFile.name)
+        const link = toUrl(fullPath, true, root)
+        const text = getTitle(fullPath, '概述')
+        items.push({ text, link })
+    }
+
+    // 2. 子目录
     for (const d of dirs) {
-        // 递归时把 root 透传下去
         const children = buildItems(path.join(dir, d.name), [], root)
         if (children.length > 0) {
             items.push({ text: d.name, collapsed: true, items: children })
         }
     }
 
+    // 3. 普通文件
     for (const f of files) {
         const fullPath = path.join(dir, f.name)
-        const isIndex = f.name === 'index.md'
-        // 用 root 计算相对路径，而不是全局 contentRoot
-        const link = toUrl(fullPath, isIndex, root)
-        const fallbackText = isIndex ? '概述' : f.name.replace(/\.md$/, '')
+        const link = toUrl(fullPath, false, root)
+        const fallbackText = f.name.replace(/\.md$/, '')
         const text = getTitle(fullPath, fallbackText)
         items.push({ text, link })
     }

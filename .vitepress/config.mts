@@ -79,6 +79,31 @@ export default withPwa(withMermaid(defineConfig({
                         name: 'red',           // Markdown 里使用的标识
                         className: 'red-underline', // 生成的 CSS 类名
                         tag: 'span'            // 包裹文字的 HTML 标签
+                    },
+                    {
+                        name: 'blue',
+                        className: 'blue-underline',
+                        tag: 'span'
+                    },
+                    {
+                        name: 'blue1',
+                        className: 'blue1-underline',
+                        tag: 'span'
+                    },
+                    {
+                        name: 'green',
+                        className: 'green-underline',
+                        tag: 'span'
+                    },
+                    {
+                        name: 'yellow',
+                        className: 'yellow-underline',
+                        tag: 'span'
+                    },
+                    {
+                        name: 'orange',
+                        className: 'orange-underline',
+                        tag: 'span'
                     }
                 ]
             })
