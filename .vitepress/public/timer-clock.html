@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>拨针时钟</title>
+    <link rel="icon" type="image/x-icon" href="/kaogong-doc/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+        }
+
+        .mode {
+            position: absolute;
+            right: 0;
+            top: 0;
+
+            .top-right-btn {
+                position: fixed;
+                top: 16px;
+                right: 16px;
+                z-index: 1200;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                background: rgba(20, 20, 20, 0.85);
+                backdrop-filter: blur(8px);
+                border: 1.5px solid #444;
+                color: #dddddd;
+                font-family: inherit;
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+                border-radius: 60px;
+                cursor: pointer;
+                text-decoration: none;
+                transition: all 0.15s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .top-right-btn:hover {
+                background: #1a1a1a;
+                border-color: #ffffff;
+                color: #ffffff;
+                box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+            }
+
+            .top-right-btn:active {
+                transform: scale(0.96);
+            }
+
+            .top-right-btn .arrow {
+                font-size: 1rem;
+                line-height: 1;
+            }
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            width: 100%;
+        }
+
+        /* ---------- 表盘 ---------- */
+        .clock {
+            width: min(84vw, 50vh, 420px);
+            height: min(84vw, 50vh, 420px);
+            display: block;
+            touch-action: none;
+            cursor: grab;
+            flex-shrink: 0;
+        }
+
+        .clock.dragging {
+            cursor: grabbing;
+        }
+
+        .face-outer {
+            fill: none;
+            stroke: #2a2a2a;
+            stroke-width: 1;
+        }
+
+        .face {
+            fill: #0a0a0a;
+            stroke: #1e1e1e;
+            stroke-width: 1;
+        }
+
+        .tick {
+            stroke: #555;
+            stroke-width: 1;
+            stroke-linecap: round;
+        }
+
+        .tick.major {
+            stroke: #ffffff;
+            stroke-width: 2.4;
+        }
+
+        .num {
+            fill: #ffffff;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-size: 26px;
+            font-weight: 300;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hand-hour {
+            stroke: #ffffff;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .hand-minute {
+            stroke: #ffffff;
+            stroke-width: 4.5;
+            stroke-linecap: round;
+        }
+
+        .hand-second {
+            stroke: #ffffff;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            opacity: 0.85;
+        }
+
+        .pin-outer {
+            fill: #ffffff;
+        }
+
+        .pin-inner {
+            fill: #000000;
+        }
+
+        .hit-area {
+            fill: transparent;
+            pointer-events: all;
+        }
+
+        .hand-hour,
+        .hand-minute,
+        .hand-second,
+        .pin-outer,
+        .pin-inner {
+            pointer-events: none;
+        }
+
+        /* ---------- 数字读数 ---------- */
+        .readout {
+            font-size: clamp(1.9rem, 7vw, 3rem);
+            font-weight: 300;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+            min-width: 5.2ch;
+            text-align: center;
+        }
+
+        .result {
+            display: none;
+            font-size: 1rem;
+            color: #7ee787;
+            letter-spacing: 0.5px;
+            text-align: center;
+            min-height: 1.4em;
+        }
+
+        @keyframes flash {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.1;
+            }
+        }
+
+        .flash {
+            animation: flash 0.4s ease 3;
+        }
+
+        /* ---------- 按钮 ---------- */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn {
+            background: #000000;
+            border: 1.5px solid #ffffff;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 400;
+            padding: 0.6rem 1.8rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #1a1a1a;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+        }
+
+        .btn:active {
+            background: #2a2a2a;
+            transform: scale(0.97);
+        }
+
+        .btn-reset {
+            border-color: #aaaaaa;
+            color: #dddddd;
+        }
+
+        .btn-reset:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .btn-complete {
+            border-color: #7ee787;
+            color: #7ee787;
+        }
+
+        .btn-complete:hover {
+            background: #0f1f13;
+            box-shadow: 0 0 0 2px rgba(126, 231, 135, 0.2);
+        }
+
+        /* 闹铃循环响时，完成按钮呼吸提示 */
+        @keyframes breathe {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(126, 231, 135, 0.45);
+            }
+
+            50% {
+                box-shadow: 0 0 0 7px rgba(126, 231, 135, 0);
+            }
+        }
+
+        .btn-complete.alarming {
+            animation: breathe 1.2s ease-in-out infinite;
+        }
+
+        .btn-small {
+            padding: 0.35rem 1.1rem;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
+
+        /* ---------- 时间段输入 ---------- */
+        .period-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            color: #999999;
+            font-size: 0.9rem;
+        }
+
+        .period-row input[type="time"] {
+            background: #111111;
+            border: 1px solid #3a3a3a;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 0.35rem 0.55rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            color-scheme: dark;
+        }
+
+        .period-row input[type="time"]:focus {
+            border-color: #ffffff;
+        }
+
+        .period-row input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8);
+            cursor: pointer;
+        }
+
+        /* ---------- 提示 ---------- */
+        .hint {
+            font-size: 0.8rem;
+            color: #777777;
+            letter-spacing: 0.5px;
+            text-align: center;
+            line-height: 1.9;
+            max-width: 460px;
+        }
+
+        .hint kbd {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 7px;
+            padding: 0.15rem 0.55rem;
+            font-family: inherit;
+            font-size: 0.78rem;
+            color: #cccccc;
+            margin: 0 2px;
+        }
+
+        /* ---------- 长按进度条 ---------- */
+        .progress-bar-container {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+
+        .progress-bar-container.active {
+            opacity: 1;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            will-change: width;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mode">
+        <a class="top-right-btn" href="timer.html" title="切换到其他页面">
+            <span>数字计时</span><span class="arrow">↗</span>
+        </a>
+    </div>
+    <div class="app">
+        <svg class="clock" id="clock" viewBox="0 0 400 400">
+            <circle class="face-outer" cx="200" cy="200" r="194" />
+            <circle class="face" cx="200" cy="200" r="190" />
+
+            <g id="ticks"></g>
+            <g id="numbers"></g>
+
+            <line class="hand-hour" id="hourHand" x1="200" y1="200" x2="200" y2="108" />
+            <line class="hand-minute" id="minuteHand" x1="200" y1="200" x2="200" y2="58" />
+            <line class="hand-second" id="secondHand" x1="200" y1="222" x2="200" y2="48" />
+            <circle class="pin-outer" cx="200" cy="200" r="9" />
+            <circle class="pin-inner" cx="200" cy="200" r="3.5" />
+
+            <circle class="hit-area" cx="200" cy="200" r="194" />
+        </svg>
+
+        <div class="readout" id="readout">12:00:00</div>
+        <div class="result" id="result"></div>
+
+        <div class="controls">
+            <button class="btn" id="startBtn">开始</button>
+            <button class="btn btn-complete" id="completeBtn" style="display:none;">完成</button>
+            <button class="btn btn-reset" id="resetBtn">重置</button>
+        </div>
+
+        <div class="period-row">
+            <span>时间段</span>
+            <input type="time" id="startTimeInput" value="09:00">
+            <span>→</span>
+            <input type="time" id="endTimeInput" value="11:00">
+            <button class="btn btn-small" id="applyPeriodBtn">设定</button>
+        </div>
+
+        <div class="hint">
+            <kbd>单击空格</kbd> 开始 / 暂停 · <kbd>长按空格 1s</kbd> 重置到 12:00:00<br>
+        </div>
+    </div>
+
+    <div class="progress-bar-container" id="progressContainer">
+        <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const NS = 'http://www.w3.org/2000/svg';
+            const CX = 200, CY = 200;
+            const DAY_SECONDS = 43200;          // 表盘一圈 12 小时 = 43200 秒
+            const HOUR_HAND_LEN = 92;
+            const MINUTE_HAND_LEN = 142;
+            const LP_DURATION = 1000;           // 长按重置时长
+            const ALARM_INTERVAL = 2000;        // 闹铃循环间隔（毫秒）
+
+            // ---------- DOM ----------
+            const svg = document.getElementById('clock');
+            const ticksG = document.getElementById('ticks');
+            const numsG = document.getElementById('numbers');
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+            const readout = document.getElementById('readout');
+            const resultEl = document.getElementById('result');
+            const startBtn = document.getElementById('startBtn');
+            const completeBtn = document.getElementById('completeBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const startTimeInput = document.getElementById('startTimeInput');
+            const endTimeInput = document.getElementById('endTimeInput');
+            const applyPeriodBtn = document.getElementById('applyPeriodBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+
+            // ---------- 状态 ----------
+            let totalSec = 0;             // 表盘当前显示时间（秒），0 = 12:00:00
+            let startClockSec = 0;        // 累计走时为 0 时的表盘时间
+            let accumulatedMs = 0;        // 累计走时（毫秒），暂停时段不计入
+            let running = false;
+            let startTimestamp = 0;       // 本次开始走时的 performance.now()
+            let rafId = null;
+
+            let alarmDurationSec = null;  // 时间段目标时长（秒）；null 表示无闹铃
+            let alarmFired = false;       // 是否已经触发过闹铃（幂等标志）
+            let alarmLoopId = null;       // 循环闹铃 setInterval 句柄
+            let alarmPlaying = false;     // 闹铃是否正在循环
+
+            let audioCtx = null;
+
+            // 拖拽
+            let dragging = false;
+            let dragTarget = null;        // 'hour' | 'minute'
+            let lastAngle = 0;
+
+            // 长按
+            let spaceDown = false;
+            let lpTimer = null;
+            let lpRaf = null;
+            let lpStart = 0;
+            let lpFired = false;
+
+            // ---------- Web Worker 闹铃调度 ----------
+            // 思路：Worker 内独立计时，用 Date.now() 判断是否到达闹铃时刻。
+            // 即使页面隐藏、rAF 被暂停，Worker 的定时器仍能（在节流允许的精度内）按时触发。
+            const workerCode = `
+                let timerId = null;
+                let targetTimestamp = 0;
+
+                self.onmessage = function (e) {
+                    const data = e.data;
+                    if (!data || typeof data !== 'object') return;
+                    if (data.type === 'start') {
+                        stopInternal();
+                        targetTimestamp = data.targetMs;
+                        // 每 200ms 检查一次；后台被节流到 1s 也能接受
+                        timerId = setInterval(check, 200);
+                        check();
+                    } else if (data.type === 'stop') {
+                        stopInternal();
+                    }
+                };
+
+                function check() {
+                    if (targetTimestamp <= 0) return;
+                    if (Date.now() >= targetTimestamp) {
+                        stopInternal();
+                        self.postMessage({ type: 'alarm' });
+                    }
+                }
+
+                function stopInternal() {
+                    if (timerId) {
+                        clearInterval(timerId);
+                        timerId = null;
+                    }
+                    targetTimestamp = 0;
+                }
+            `;
+
+            let alarmWorker = null;
+            try {
+                const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+                const workerUrl = URL.createObjectURL(workerBlob);
+                alarmWorker = new Worker(workerUrl);
+                alarmWorker.onmessage = function (e) {
+                    if (e.data && e.data.type === 'alarm') {
+                        // Worker 在后台准时唤醒 → 触发闹铃
+                        ensureAudioCtx();
+                        triggerAlarm();
+                    }
+                };
+            } catch (err) {
+                // 环境不支持 Worker：降级为仅前台 rAF 检测（切回前台才响）
+                alarmWorker = null;
+            }
+
+            // 通知 Worker 开始/停止闹铃监测
+            function workerStartAlarm(remainingMs) {
+                if (!alarmWorker) return;
+                if (remainingMs > 0) {
+                    alarmWorker.postMessage({
+                        type: 'start',
+                        targetMs: Date.now() + remainingMs
+                    });
+                }
+            }
+
+            function workerStopAlarm() {
+                if (!alarmWorker) return;
+                alarmWorker.postMessage({ type: 'stop' });
+            }
+
+            // ---------- 工具 ----------
+            function modDay(sec) {
+                return ((sec % DAY_SECONDS) + DAY_SECONDS) % DAY_SECONDS;
+            }
+
+            function formatDuration(ms) {
+                const total = Math.max(0, Math.round(ms / 1000));
+                const h = Math.floor(total / 3600);
+                const m = Math.floor((total % 3600) / 60);
+                const s = total % 60;
+                if (h > 0) return `${h} 小时 ${String(m).padStart(2, '0')} 分 ${String(s).padStart(2, '0')} 秒`;
+                if (m > 0) return `${m} 分 ${String(s).padStart(2, '0')} 秒`;
+                return `${s} 秒`;
+            }
+
+            // ---------- 构建表盘 ----------
+            function buildDial() {
+                for (let i = 0; i < 60; i++) {
+                    const major = i % 5 === 0;
+                    const rad = (i * 6 - 90) * Math.PI / 180;
+                    const r1 = major ? 156 : 166;
+                    const r2 = 177;
+
+                    const line = document.createElementNS(NS, 'line');
+                    line.setAttribute('x1', (CX + Math.cos(rad) * r1).toFixed(2));
+                    line.setAttribute('y1', (CY + Math.sin(rad) * r1).toFixed(2));
+                    line.setAttribute('x2', (CX + Math.cos(rad) * r2).toFixed(2));
+                    line.setAttribute('y2', (CY + Math.sin(rad) * r2).toFixed(2));
+                    line.setAttribute('class', major ? 'tick major' : 'tick');
+                    ticksG.appendChild(line);
+                }
+
+                for (let i = 1; i <= 12; i++) {
+                    const rad = (i * 30 - 90) * Math.PI / 180;
+                    const r = 134;
+                    const text = document.createElementNS(NS, 'text');
+                    text.setAttribute('x', (CX + Math.cos(rad) * r).toFixed(2));
+                    text.setAttribute('y', (CY + Math.sin(rad) * r).toFixed(2));
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('dominant-baseline', 'central');
+                    text.setAttribute('class', 'num');
+                    text.textContent = i;
+                    numsG.appendChild(text);
+                }
+            }
+
+            // ---------- 渲染 ----------
+            function render() {
+                const sec = modDay(totalSec);
+                const hAngle = sec / DAY_SECONDS * 360;
+                const mAngle = (sec % 3600) / 3600 * 360;
+                const sAngle = (sec % 60) / 60 * 360;
+                hourHand.setAttribute('transform', `rotate(${hAngle.toFixed(4)} ${CX} ${CY})`);
+                minuteHand.setAttribute('transform', `rotate(${mAngle.toFixed(4)} ${CX} ${CY})`);
+                secondHand.setAttribute('transform', `rotate(${sAngle.toFixed(4)} ${CX} ${CY})`);
+                updateReadout(sec);
+            }
+
+            function updateReadout(sec) {
+                const s = Math.floor(modDay(sec));
+                let h = Math.floor(s / 3600) % 12;
+                if (h === 0) h = 12;      // 12 小时制：0 显示为 12
+                const m = Math.floor((s % 3600) / 60);
+                const ss = s % 60;
+                readout.textContent =
+                    `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+            }
+
+            function flashReadout() {
+                readout.classList.remove('flash');
+                svg.classList.remove('flash');
+                void readout.offsetWidth;
+                readout.classList.add('flash');
+                svg.classList.add('flash');
+                setTimeout(() => {
+                    readout.classList.remove('flash');
+                    svg.classList.remove('flash');
+                }, 1400);
+            }
+
+            function showComplete() { completeBtn.style.display = ''; }
+            function hideComplete() {
+                completeBtn.style.display = 'none';
+                completeBtn.classList.remove('alarming');
+            }
+            function hideResult() { resultEl.textContent = ''; resultEl.style.display = 'none'; }
+
+            // ---------- 音频闹铃 ----------
+            function ensureAudioCtx() {
+                try {
+                    if (!audioCtx) {
+                        const AC = window.AudioContext || window.webkitAudioContext;
+                        if (AC) audioCtx = new AC();
+                    }
+                    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                } catch (err) { /* 忽略 */ }
+            }
+
+            // 播放一遍铃声：两下“叮—叮” + 震动
+            function playAlarmOnce() {
+                ensureAudioCtx();
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+                [0, 0.22].forEach((off) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = 988;
+                    gain.gain.setValueAtTime(0.0001, now + off);
+                    gain.gain.exponentialRampToValueAtTime(0.4, now + off + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + off + 0.18);
+                    osc.connect(gain).connect(audioCtx.destination);
+                    osc.start(now + off);
+                    osc.stop(now + off + 0.2);
+                });
+            }
+
+            // 启动循环闹铃
+            function startAlarmLoop() {
+                if (alarmPlaying) return;
+                alarmPlaying = true;
+                playAlarmOnce();
+                alarmLoopId = setInterval(playAlarmOnce, ALARM_INTERVAL);
+            }
+
+            // 停止循环闹铃
+            function stopAlarmLoop() {
+                alarmPlaying = false;
+                if (alarmLoopId) {
+                    clearInterval(alarmLoopId);
+                    alarmLoopId = null;
+                }
+                if (navigator.vibrate) {
+                    navigator.vibrate(0);   // 停止震动
+                }
+            }
+
+            // ---------- 走时 ----------
+            function tick() {
+                if (!running) return;
+                const now = performance.now();
+                const ms = accumulatedMs + (now - startTimestamp);
+                totalSec = modDay(startClockSec + ms / 1000);
+                render();
+
+                // 前台高精度检测：到点触发闹铃（幂等，Worker 可能已先触发）
+                if (alarmDurationSec != null && !alarmFired && ms >= alarmDurationSec * 1000) {
+                    triggerAlarm();
+                }
+                rafId = requestAnimationFrame(tick);
+            }
+
+            // 闹铃触发：幂等；不停止计时器，只开始循环响铃、显示完成按钮
+            function triggerAlarm() {
+                if (alarmFired) return;        // 已在响铃，避免重复
+                alarmFired = true;
+                showComplete();
+                completeBtn.classList.add('alarming');
+                startAlarmLoop();
+                flashReadout();
+            }
+
+            function startTimer() {
+                if (running) return;
+                ensureAudioCtx();          // 在用户手势中初始化音频
+                running = true;
+                startTimestamp = performance.now();
+                startBtn.textContent = '暂停';
+                // 闹铃正在响时保留完成按钮，否则隐藏
+                if (!alarmPlaying) hideComplete();
+                hideResult();
+
+                // 通知 Worker：从“现在起”还剩多久到闹铃点
+                if (alarmDurationSec != null && !alarmFired) {
+                    const remainingMs = alarmDurationSec * 1000 - accumulatedMs;
+                    if (remainingMs > 0) {
+                        workerStartAlarm(remainingMs);
+                    } else {
+                        // 已超时，直接触发
+                        setTimeout(triggerAlarm, 0);
+                    }
+                }
+
+                rafId = requestAnimationFrame(tick);
+            }
+
+            function pauseTimer() {
+                if (!running) return;
+                accumulatedMs += performance.now() - startTimestamp;
+                running = false;
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+                workerStopAlarm();   // 暂停时停止 Worker 监测
+                totalSec = modDay(startClockSec + accumulatedMs / 1000);
+                startBtn.textContent = '开始';
+                render();
+                showComplete();
+            }
+
+            function resetTimer() {
+                stopAlarmLoop();
+                workerStopAlarm();
+                running = false;
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+                accumulatedMs = 0;
+                startClockSec = 0;
+                totalSec = 0;
+                alarmDurationSec = null;
+                alarmFired = false;
+                startBtn.textContent = '开始';
+                hideComplete();
+                hideResult();
+                render();
+            }
+
+            function toggleStartPause() {
+                if (running) pauseTimer();
+                else startTimer();
+            }
+
+            // ---------- 坐标与角度 ----------
+            function getAngle(clientX, clientY) {
+                const rect = svg.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const dx = clientX - cx;
+                const dy = clientY - cy;
+                let a = Math.atan2(dx, -dy) * 180 / Math.PI;
+                if (a < 0) a += 360;
+                return a;
+            }
+
+            function clientToSvg(clientX, clientY) {
+                const pt = svg.createSVGPoint();
+                pt.x = clientX;
+                pt.y = clientY;
+                return pt.matrixTransform(svg.getScreenCTM().inverse());
+            }
+
+            // 判断用户想拖时针还是分针：比较按下点到两针端点的距离
+            function pickTarget(clientX, clientY) {
+                const p = clientToSvg(clientX, clientY);
+                const sec = modDay(totalSec);
+                const hRad = (sec / DAY_SECONDS * 360) * Math.PI / 180;
+                const mRad = ((sec % 3600) / 3600 * 360) * Math.PI / 180;
+
+                const hx = CX + HOUR_HAND_LEN * Math.sin(hRad);
+                const hy = CY - HOUR_HAND_LEN * Math.cos(hRad);
+                const mx = CX + MINUTE_HAND_LEN * Math.sin(mRad);
+                const my = CY - MINUTE_HAND_LEN * Math.cos(mRad);
+
+                const dh = Math.hypot(p.x - hx, p.y - hy);
+                const dm = Math.hypot(p.x - mx, p.y - my);
+
+                // 两针重叠时优先选分针（便于精调）
+                if (Math.abs(dh - dm) < 6) return 'minute';
+                return dh < dm ? 'hour' : 'minute';
+            }
+
+            // ---------- 拖拽拨针（秒针固定 0） ----------
+            function onPointerDown(e) {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                e.preventDefault();
+                if (running) pauseTimer();
+
+                stopAlarmLoop();   // 拨针即结束本次闹铃
+                workerStopAlarm();
+                hideComplete();
+                hideResult();
+
+                // 拨针即重新设定：清零累计走时、清除闹铃
+                accumulatedMs = 0;
+                alarmDurationSec = null;
+                alarmFired = false;
+                startClockSec = totalSec;
+
+                dragTarget = pickTarget(e.clientX, e.clientY);
+                dragging = true;
+                lastAngle = getAngle(e.clientX, e.clientY);
+                svg.classList.add('dragging');
+                try { svg.setPointerCapture(e.pointerId); } catch (_) { }
+            }
+
+            function onPointerMove(e) {
+                if (!dragging) return;
+                e.preventDefault();
+
+                const angle = getAngle(e.clientX, e.clientY);
+                let delta = angle - lastAngle;
+                // 归一化到 -180 ~ 180：顺时针为正，逆时针为负
+                if (delta > 180) delta -= 360;
+                if (delta < -180) delta += 360;
+                lastAngle = angle;
+
+                // 时针每度 = 2 分钟；分针每度 = 10 秒
+                if (dragTarget === 'hour') {
+                    totalSec += delta * 120;
+                } else {
+                    totalSec += delta * 10;
+                }
+
+                // 秒针固定在 0：吸附到整分钟
+                totalSec = modDay(Math.round(totalSec / 60) * 60);
+                startClockSec = totalSec;
+                render();
+            }
+
+            function onPointerUp(e) {
+                if (!dragging) return;
+                dragging = false;
+                svg.classList.remove('dragging');
+                try { svg.releasePointerCapture(e.pointerId); } catch (_) { }
+                startClockSec = totalSec;
+                accumulatedMs = 0;
+                render();
+            }
+
+            // ---------- 时间段设定 ----------
+            function applyPeriod() {
+                const sv = startTimeInput.value;
+                const ev = endTimeInput.value;
+                if (!sv || !ev) return;
+
+                const [sh, sm] = sv.split(':').map(Number);
+                const [eh, em] = ev.split(':').map(Number);
+
+                const startSec = ((sh % 12) * 3600 + sm * 60) % DAY_SECONDS;
+                const endSec = ((eh % 12) * 3600 + em * 60) % DAY_SECONDS;
+
+                let duration = endSec - startSec;
+                if (duration <= 0) duration += DAY_SECONDS;   // 跨 12 小时 / 跨天
+
+                if (running) pauseTimer();
+                stopAlarmLoop();
+                workerStopAlarm();
+
+                accumulatedMs = 0;
+                startClockSec = startSec;
+                totalSec = startSec;
+                alarmDurationSec = duration;
+                alarmFired = false;
+
+                startBtn.textContent = '开始';
+                hideComplete();
+                hideResult();
+                render();
+            }
+
+            // ---------- 长按重置 ----------
+            function lpTick() {
+                if (!spaceDown) return;
+                const p = Math.min((performance.now() - lpStart) / LP_DURATION, 1);
+                progressFill.style.width = (p * 100) + '%';
+                if (p >= 1) {
+                    lpRaf = null;
+                    return;
+                }
+                lpRaf = requestAnimationFrame(lpTick);
+            }
+
+            function startLongPress() {
+                clearLongPress();
+                lpFired = false;
+                progressContainer.classList.add('active');
+                progressFill.style.width = '0%';
+                lpStart = performance.now();
+                lpRaf = requestAnimationFrame(lpTick);
+
+                lpTimer = setTimeout(() => {
+                    lpFired = true;
+                    resetTimer();
+                    progressFill.style.width = '100%';
+                    if (lpRaf) {
+                        cancelAnimationFrame(lpRaf);
+                        lpRaf = null;
+                    }
+                    if (lpTimer) {
+                        clearTimeout(lpTimer);
+                        lpTimer = null;
+                    }
+                    if (!spaceDown) {
+                        progressContainer.classList.remove('active');
+                        progressFill.style.width = '0%';
+                    }
+                }, LP_DURATION);
+            }
+
+            function clearLongPress() {
+                if (lpTimer) {
+                    clearTimeout(lpTimer);
+                    lpTimer = null;
+                }
+                if (lpRaf) {
+                    cancelAnimationFrame(lpRaf);
+                    lpRaf = null;
+                }
+                progressContainer.classList.remove('active');
+                progressFill.style.width = '0%';
+            }
+
+            // ---------- 键盘 ----------
+            window.addEventListener('keydown', (e) => {
+                if (e.code !== 'Space') return;
+                e.preventDefault();
+                if (e.repeat || spaceDown) return;
+                spaceDown = true;
+                startLongPress();
+            }, { passive: false });
+
+            window.addEventListener('keyup', (e) => {
+                if (e.code !== 'Space') return;
+                e.preventDefault();
+                if (!spaceDown) return;
+
+                spaceDown = false;
+                clearLongPress();
+
+                if (lpFired) {
+                    lpFired = false;
+                    return;
+                }
+                toggleStartPause();
+            }, { passive: false });
+
+            window.addEventListener('blur', () => {
+                if (spaceDown) {
+                    spaceDown = false;
+                    clearLongPress();
+                }
+            });
+
+            // ---------- 页面可见性补偿 ----------
+            // 切回前台时，rAF 恢复；立即执行一次 tick，用最新的 performance.now()
+            // 把后台期间“欠账”的走时一次性补齐。
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    ensureAudioCtx();
+                    if (running) {
+                        if (rafId) {
+                            cancelAnimationFrame(rafId);
+                            rafId = null;
+                        }
+                        tick();
+                    }
+                }
+            });
+
+            // ---------- 绑定 ----------
+            svg.addEventListener('pointerdown', onPointerDown);
+            svg.addEventListener('pointermove', onPointerMove);
+            svg.addEventListener('pointerup', onPointerUp);
+            svg.addEventListener('pointercancel', onPointerUp);
+            svg.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            startBtn.addEventListener('click', toggleStartPause);
+            resetBtn.addEventListener('click', resetTimer);
+            applyPeriodBtn.addEventListener('click', applyPeriod);
+
+            // 完成按钮：停止闹铃、停止 Worker、停止计时、显示本次累计走时
+            completeBtn.addEventListener('click', () => {
+                stopAlarmLoop();
+                workerStopAlarm();
+
+                if (running) {
+                    accumulatedMs += performance.now() - startTimestamp;
+                    running = false;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    totalSec = modDay(startClockSec + accumulatedMs / 1000);
+                    startBtn.textContent = '开始';
+                    render();
+                }
+
+                hideComplete();
+                resultEl.textContent = '本次共用时 ' + formatDuration(accumulatedMs);
+                resultEl.style.display = 'block';
+            });
+
+            // ---------- 初始化 ----------
+            buildDial();
+            hideComplete();
+            hideResult();
+            render();
+        })();
+    </script>
+</body>
+
+</html>

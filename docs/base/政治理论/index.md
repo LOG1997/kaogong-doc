@@ -12,6 +12,7 @@ title: 政治理论目录
       <summary><strong>36计</strong></summary>
       <ul>
         <li><a href="/kaogong-doc/base/政治理论/36计/经济">经济</a></li>
+        <li><a href="/kaogong-doc/base/政治理论/36计/政治">政治</a></li>
       </ul>
     </details>
   </li>

@@ -54,6 +54,51 @@
             transition: transform 0.05s ease;
         }
 
+        .mode {
+            position: absolute;
+            right: 0;
+            top: 0;
+
+            .top-right-btn {
+                position: fixed;
+                top: 16px;
+                right: 16px;
+                z-index: 1200;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                background: rgba(20, 20, 20, 0.85);
+                backdrop-filter: blur(8px);
+                border: 1.5px solid #444;
+                color: #dddddd;
+                font-family: inherit;
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+                border-radius: 60px;
+                cursor: pointer;
+                text-decoration: none;
+                transition: all 0.15s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .top-right-btn:hover {
+                background: #1a1a1a;
+                border-color: #ffffff;
+                color: #ffffff;
+                box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+            }
+
+            .top-right-btn:active {
+                transform: scale(0.96);
+            }
+
+            .top-right-btn .arrow {
+                font-size: 1rem;
+                line-height: 1;
+            }
+        }
+
+
         .controls {
             display: flex;
             gap: 1.5rem;
@@ -160,7 +205,14 @@
 </head>
 
 <body>
+    <div class="mode">
+        <a class="top-right-btn" href="timer-clock.html" title="切换到其他页面">
+            <span>拨针计时</span><span class="arrow">↗</span>
+        </a>
+    </div>
     <div class="timer-container">
+        <!-- 模式切换 -->
+
         <!-- 时间显示：大字号 -->
         <div class="time-display" id="display">00:00.00</div>
 
@@ -172,7 +224,7 @@
 
         <!-- 快捷键提示 -->
         <div class="hint">
-            <kbd>单击空格</kbd> 开始 / 暂停 · <kbd>长按空格 3s</kbd> 重置
+            <kbd>单击空格</kbd> 开始 / 暂停 · <kbd>长按空格 1s</kbd> 重置
         </div>
     </div>
 
