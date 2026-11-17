@@ -145,6 +145,7 @@ onMounted(() => {
                     if (!h2Plain) continue
                     currentCategory = h2Plain
                     const anchorId = child.id || ''
+                    // if (child.id) child.removeAttribute('id')   // ← 新增
                     current = newQuestion('', h2Html, h2Plain, 2)
                     current.anchorId = anchorId
                     h2Consumed = false
@@ -153,7 +154,7 @@ onMounted(() => {
                     const titlePlain = stripTags(titleHtml)
                     if (!titlePlain) continue
                     const anchorId = child.id || ''
-                    if (child.id) child.removeAttribute('id')
+                    // if (child.id) child.removeAttribute('id')
                     if (current && !h2Consumed) {
                         current.category = currentCategory
                         current.title = titleHtml
@@ -193,7 +194,12 @@ onMounted(() => {
 
         rows.value = parsed
         ready.value = true
-
+        nextTick(() => {
+            // 此时卡片已经渲染，大纲也已基于源 id 生成，可以安全清理源 id 了
+            slotRef.value?.querySelectorAll('h2[id], h3[id]').forEach(el => {
+                el.removeAttribute('id')
+            })
+        })
         nextTick(() => {
             const hash = decodeURIComponent(window.location.hash.slice(1))
             if (!hash) return
@@ -281,13 +287,14 @@ function tagClass(t: string) {
         <div v-if="ready" class="whis-list">
             <div v-for="(r, i) in filtered" :key="i" :id="r.anchorId || undefined" class="whis-card" role="button"
                 tabindex="0" @click="openDetail(r)" @keydown.enter="openDetail(r)">
-                <div class="whis-card-head">
+                <component :is="`h${r.titleLevel}`" :id="r.anchorId || undefined" class="whis-card-head">
                     <span v-if="r.category" class="whis-category">{{ r.category }}</span>
                     <span class="whis-title" :class="`is-h${r.titleLevel}`" v-html="r.title"></span>
+                    <!-- 标签部分也可以放在里面 -->
                     <span class="whis-tags">
                         <span v-for="t in r.tags" :key="t" class="whis-tag" :class="tagClass(t)">{{ t }}</span>
                     </span>
-                </div>
+                </component>
                 <div class="whis-body">
                     <div v-if="r.knowledge" class="whis-field">
                         <span class="whis-label label-knowledge">要点</span>
@@ -334,7 +341,7 @@ function tagClass(t: string) {
                                 v-html="activeItem.title"></span>
                             <span v-if="activeItem.tags.length" class="whis-modal-tags">
                                 <span v-for="t in activeItem.tags" :key="t" class="whis-tag" :class="tagClass(t)">{{ t
-                                    }}</span>
+                                }}</span>
                             </span>
                         </div>
 
@@ -377,7 +384,8 @@ function tagClass(t: string) {
 
 .whis-filter {
     position: sticky;
-    top: 0;
+    top: var(--vp-nav-height);
+    /* ← 关键：停靠在导航栏下方 */
     z-index: 10;
     padding: 10px 0;
     margin-bottom: 10px;
@@ -497,8 +505,16 @@ function tagClass(t: string) {
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+
+    margin: 0 0 8px 0 !important;
+    padding: 0 0 8px 0 !important;
+    background: transparent !important;
+    border-top: none !important;
+    /* 只保留你需要的下边距 */
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+
     border-bottom: 1px dashed var(--vp-c-divider);
 }
 
