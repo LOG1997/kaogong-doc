@@ -114,7 +114,7 @@ export default withPwa(withMermaid(defineConfig({
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: '首页', link: '/' },
-            { text: '理论知识', link: '/base' + allIndexLink },
+            { text: '理论知识', link: '/base' + allIndexLink, activeMatch: '/base/' },
             { text: '错难重薄', link: '/whis', activeMatch: '/whis/' },
             { component: 'BuildTime' },
         ],
