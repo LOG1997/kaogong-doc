@@ -6,6 +6,7 @@ title: 判断推理目录
 
 > 本页由 `sidebar.mts` 自动生成，请勿手动修改。
 
+<div class="auto-toc-page">
 <ul>
   <li class="toc-branch">
     <details>
@@ -79,14 +80,15 @@ title: 判断推理目录
   <li><a href="/kaogong-doc/base/判断推理/用时">用时</a></li>
 </ul>
 
+</div>
 
 <style>
-.vp-doc ul { list-style: none; padding-left: 16px; margin: 4px 0; }
-.vp-doc > ul, .vp-doc ul > li > ul { padding-left: 0; }
-.toc-branch > details {
+.auto-toc-page ul { list-style: none; padding-left: 16px; margin: 4px 0; }
+.auto-toc-page .vp-doc > ul, .auto-toc-page .vp-doc ul > li > ul { padding-left: 0; }
+.auto-toc-page .toc-branch > details {
   margin: 4px 0;
   border-left: 2px solid var(--vp-c-divider);
   padding-left: 10px;
 }
-.toc-branch > details > summary { cursor: pointer; padding: 2px 0; }
+.auto-toc-page .toc-branch > details > summary { cursor: pointer; padding: 2px 0; }
 </style>

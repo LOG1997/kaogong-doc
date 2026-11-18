@@ -155,17 +155,19 @@ title: ${dirName}目录
 
 > 本页由 \`sidebar.mts\` 自动生成，请勿手动修改。
 
+<div class="auto-toc-page">
 ${body}
+</div>
 
 <style>
-.vp-doc ul { list-style: none; padding-left: 16px; margin: 4px 0; }
-.vp-doc > ul, .vp-doc ul > li > ul { padding-left: 0; }
-.toc-branch > details {
+.auto-toc-page ul { list-style: none; padding-left: 16px; margin: 4px 0; }
+.auto-toc-page .vp-doc > ul, .auto-toc-page .vp-doc ul > li > ul { padding-left: 0; }
+.auto-toc-page .toc-branch > details {
   margin: 4px 0;
   border-left: 2px solid var(--vp-c-divider);
   padding-left: 10px;
 }
-.toc-branch > details > summary { cursor: pointer; padding: 2px 0; }
+.auto-toc-page .toc-branch > details > summary { cursor: pointer; padding: 2px 0; }
 </style>`
     fs.writeFileSync(indexPath, content, 'utf-8')
 }
@@ -201,32 +203,34 @@ title: 全部目录
 
 > 本页由 \`sidebar.mts\` 自动生成，请勿手动修改。
 
+<div class="auto-toc-page">
 ${body}
+</div>
 
 <style>
-.toc-branch > details {
+.auto-toc-page .toc-branch > details {
   margin: 4px 0;
   border-left: 2px solid var(--vp-c-divider);
   padding-left: 10px;
 }
-.toc-branch > details > summary {
+.auto-toc-page .toc-branch > details > summary {
   cursor: pointer;
   padding: 2px 0;
 }
 
 /* 去掉圆点，用 padding-left 保留层级缩进 */
-.vp-doc ul {
+.auto-toc-page ul {
   list-style: none;
   padding-left: 16px;
   margin: 4px 0;
 }
 /* 最外层不留左内边距，避免整体右移 */
-.vp-doc ul > li > ul,
-.vp-doc > ul {
+.auto-toc-page .vp-doc ul > li > ul,
+.auto-toc-page .vp-doc > ul {
   padding-left: 0;
 }
 
-.toc-branch > details > summary::-webkit-details-marker {
+.auto-toc-page .toc-branch > details > summary::-webkit-details-marker {
   display: none;
 }
 </style>`

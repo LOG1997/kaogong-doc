@@ -1,12 +1,14 @@
 // .vitepress/theme/index.ts
 import DefaultTheme from 'vitepress/theme'
 import BuildTime from './components/BuildTime.vue'
-import './styles/custom.css'
-import './styles/root.css'
 import FlashCard from './components/FlashCard.vue'
 import FlashCompare from './components/FlashCompare.vue'
 import RegisterSW from './components/RegisterSW.vue'
 import WhisCards from './components/WhisCards.vue'
+import './styles/root.css'
+import './styles/custom.css'
+
+
 import { h } from 'vue'
 
 export default {
