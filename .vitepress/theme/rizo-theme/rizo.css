@@ -1,0 +1,617 @@
+/* ==========================================================================
+   rizo for VitePress — a two-ink risograph theme
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Literata:ital,opsz,wght@0,7..72,200..700;1,7..72,200..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* --------------------------------------------------------------------------
+   1. rizo tokens — light
+   -------------------------------------------------------------------------- */
+:root {
+    --rizo-paper: #FFFFFF;
+    --rizo-surface: #FFFFFF;
+    --rizo-surface-2: #E4D9C3;
+    --rizo-ink: #1D1A2C;
+    --rizo-ink-soft: #3A3550;
+    --rizo-muted: #7A7263;
+    --rizo-rule: #DCD1BC;
+
+    --rizo-ink-a: #F0339A;
+    --rizo-ink-a-text: #C21F7A;
+    --rizo-ink-a-soft: #FBD9EA;
+    --rizo-ink-b: #0068B5;
+    --rizo-on-ink-b: #FFFFFF;
+    --rizo-link: var(--rizo-ink-b);
+
+    --rizo-note: #0068B5;
+    --rizo-tip: #1E8A55;
+    --rizo-important: #7B4FC9;
+    --rizo-warning: #B86A00;
+    --rizo-caution: #D62F4B;
+
+    --rizo-head: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", sans-serif;
+    --rizo-body: "Literata", "Iowan Old Style", Georgia, serif;
+    --rizo-mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --rizo-offset: 5px;
+}
+
+/* --------------------------------------------------------------------------
+   2. rizo tokens — dark
+   -------------------------------------------------------------------------- */
+.dark {
+    --rizo-paper: #14121C;
+    --rizo-surface: #1E1A29;
+    --rizo-surface-2: #282336;
+    --rizo-ink: #F1EAD9;
+    --rizo-ink-soft: #C9C1B2;
+    --rizo-muted: #8B8273;
+    --rizo-rule: #383243;
+
+    --rizo-ink-a: #FF5CAE;
+    --rizo-ink-a-text: #FF8CC7;
+    --rizo-ink-a-soft: #3B1B31;
+    --rizo-ink-b: #5AA9E6;
+    --rizo-on-ink-b: #0B1020;
+    --rizo-link: var(--rizo-ink-b);
+
+    --rizo-note: #5AA9E6;
+    --rizo-tip: #4CC38A;
+    --rizo-important: #A98BF0;
+    --rizo-warning: #E0A040;
+    --rizo-caution: #F0647C;
+}
+
+/* --------------------------------------------------------------------------
+   3. Map rizo onto VitePress tokens
+   -------------------------------------------------------------------------- */
+:root,
+.dark {
+    --vp-c-bg: var(--rizo-paper);
+    --vp-c-bg-alt: var(--rizo-surface);
+    --vp-c-bg-soft: var(--rizo-surface);
+    --vp-c-bg-elv: var(--rizo-paper);
+    --vp-c-bg-mute: var(--rizo-surface-2);
+
+    --vp-c-text-1: var(--rizo-ink);
+    --vp-c-text-2: var(--rizo-ink-soft);
+    --vp-c-text-3: var(--rizo-muted);
+
+    --vp-c-divider: var(--rizo-rule);
+    --vp-c-border: var(--rizo-rule);
+    --vp-c-gutter: var(--rizo-rule);
+
+    --vp-c-brand-1: var(--rizo-ink-b);
+    --vp-c-brand-2: var(--rizo-ink-b);
+    --vp-c-brand-3: var(--rizo-ink-b);
+    --vp-c-brand-soft: color-mix(in srgb, var(--rizo-ink-b) 14%, transparent);
+
+    --vp-c-tip-1: var(--rizo-tip);
+    --vp-c-warning-1: var(--rizo-warning);
+    --vp-c-danger-1: var(--rizo-caution);
+    --vp-c-important-1: var(--rizo-important);
+    --vp-c-note-1: var(--rizo-note);
+    --vp-c-success-1: var(--rizo-tip);
+
+    --vp-custom-block-tip-border: var(--rizo-tip);
+    --vp-custom-block-tip-text: var(--rizo-tip);
+    --vp-custom-block-tip-bg: color-mix(in srgb, var(--rizo-tip) 7%, var(--rizo-paper));
+    --vp-custom-block-info-border: var(--rizo-note);
+    --vp-custom-block-info-text: var(--rizo-note);
+    --vp-custom-block-info-bg: color-mix(in srgb, var(--rizo-note) 7%, var(--rizo-paper));
+    --vp-custom-block-warning-border: var(--rizo-warning);
+    --vp-custom-block-warning-text: var(--rizo-warning);
+    --vp-custom-block-warning-bg: color-mix(in srgb, var(--rizo-warning) 7%, var(--rizo-paper));
+    --vp-custom-block-danger-border: var(--rizo-caution);
+    --vp-custom-block-danger-text: var(--rizo-caution);
+    --vp-custom-block-danger-bg: color-mix(in srgb, var(--rizo-caution) 7%, var(--rizo-paper));
+    --vp-custom-block-important-border: var(--rizo-important);
+    --vp-custom-block-important-text: var(--rizo-important);
+    --vp-custom-block-important-bg: color-mix(in srgb, var(--rizo-important) 7%, var(--rizo-paper));
+
+    --vp-font-family-base: var(--rizo-head);
+    --vp-font-family-mono: var(--rizo-mono);
+
+    --vp-nav-bg-color: var(--rizo-paper);
+    --vp-sidebar-bg-color: var(--rizo-surface);
+
+    --vp-code-block-bg: var(--rizo-surface);
+    --vp-code-bg: var(--rizo-ink-a-soft);
+    --vp-code-color: var(--rizo-ink);
+    --vp-code-line-highlight-color: color-mix(in srgb, var(--rizo-ink-a) 12%, transparent);
+    --vp-code-copy-code-bg: var(--rizo-surface-2);
+    --vp-code-copy-code-hover-bg: var(--rizo-surface-2);
+    --vp-code-copy-code-border-color: var(--rizo-rule);
+
+    --vp-button-brand-bg: var(--rizo-ink-b);
+    --vp-button-brand-border: var(--rizo-ink-b);
+    --vp-button-brand-text: var(--rizo-on-ink-b);
+    --vp-button-brand-hover-bg: color-mix(in srgb, var(--rizo-ink-b) 82%, black);
+    --vp-button-brand-hover-border: color-mix(in srgb, var(--rizo-ink-b) 82%, black);
+}
+
+::selection {
+    background: color-mix(in srgb, var(--rizo-ink-a) 30%, transparent);
+    text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. Document base
+   -------------------------------------------------------------------------- */
+.vp-doc {
+    font-family: var(--rizo-body);
+    font-size: 1.0625rem;
+    line-height: 1.72;
+    color: var(--rizo-ink);
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+}
+
+.vp-doc p {
+    margin: 0 0 1.1em;
+}
+
+.vp-doc li>p {
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. Headings — heavy grotesque with off-register ink shadow
+   -------------------------------------------------------------------------- */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.vp-doc h5,
+.vp-doc h6 {
+    font-family: var(--rizo-head);
+    color: var(--rizo-ink);
+    font-variation-settings: "opsz" 96;
+}
+
+.vp-doc h1 {
+    font-weight: 800;
+    font-size: 2.9em;
+    line-height: 1;
+    letter-spacing: -.035em;
+    margin: .2em 0 .55em;
+    text-shadow: 3px 3px 0 color-mix(in srgb, var(--rizo-ink-a) 75%, transparent);
+}
+
+.vp-doc h1+p {
+    font-size: 1.12em;
+    line-height: 1.6;
+    color: var(--rizo-ink-soft);
+    margin-bottom: 1.8em;
+}
+
+.vp-doc h2 {
+    border-top: 0;
+    padding-top: 0;
+    font-weight: 800;
+    font-size: 1.7em;
+    line-height: 1.15;
+    letter-spacing: -.025em;
+    margin: 2.2em 0 .7em;
+    text-shadow: 2px 2px 0 color-mix(in srgb, var(--rizo-ink-b) 55%, transparent);
+}
+
+.vp-doc h2>.header-anchor {
+    float: none;
+    position: absolute;
+    left: -0.9em;
+    /* 和默认 -0.87em 接近，按需微调 */
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    padding-right: 0;
+    line-height: 1;
+}
+
+.vp-doc h3 {
+    font-weight: 700;
+    font-size: 1.22em;
+    line-height: 1.3;
+    letter-spacing: -.01em;
+    color: var(--rizo-ink-b);
+    margin: 1.9em 0 .5em;
+    text-shadow: none;
+}
+
+.vp-doc h4 {
+    font-weight: 700;
+    font-size: 1.02em;
+    color: var(--rizo-ink-soft);
+    margin: 1.6em 0 .4em;
+}
+
+.vp-doc h5,
+.vp-doc h6 {
+    font-weight: 700;
+    font-size: .78em;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--rizo-muted);
+    margin: 1.6em 0 .4em;
+}
+
+.vp-doc h1 ::selection,
+.vp-doc h2 ::selection {
+    text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   6. Inline
+   -------------------------------------------------------------------------- */
+.vp-doc a {
+    color: var(--rizo-link);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: .2em;
+    text-decoration-color: color-mix(in srgb, var(--rizo-link) 40%, transparent);
+}
+
+.vp-doc a:hover {
+    text-decoration-color: var(--rizo-ink-a);
+}
+
+.vp-doc strong {
+    font-weight: 650;
+    color: var(--rizo-ink);
+}
+
+.vp-doc :not(pre)>code {
+    font-family: var(--rizo-mono);
+    font-size: .84em;
+    padding: .12em .38em;
+    background: var(--rizo-ink-a-soft);
+    color: var(--rizo-ink);
+    border-radius: 0;
+}
+
+.vp-doc mark {
+    background: color-mix(in srgb, var(--rizo-ink-a) 30%, transparent);
+    color: inherit;
+    padding: 0 .12em;
+}
+
+.vp-doc kbd {
+    font-family: var(--rizo-mono);
+    font-size: .76em;
+    padding: .1em .45em;
+    color: var(--rizo-ink);
+    background: var(--rizo-paper);
+    border: 1.5px solid var(--rizo-ink);
+    border-radius: 0;
+    box-shadow: 2px 2px 0 var(--rizo-ink-a);
+}
+
+.vp-doc del {
+    color: var(--rizo-muted);
+}
+
+/* --------------------------------------------------------------------------
+   7. Lists
+   -------------------------------------------------------------------------- */
+.vp-doc ul,
+.vp-doc ol {
+    padding-left: 1.5em;
+}
+
+.vp-doc li {
+    margin: .35em 0;
+}
+
+.vp-doc li::marker {
+    color: var(--rizo-ink-a);
+    font-family: var(--rizo-head);
+    font-weight: 700;
+}
+
+/* Task lists */
+.vp-doc .task-list-item {
+    list-style: none;
+    position: relative;
+}
+
+.vp-doc .task-list-item>input {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    left: -1.55em;
+    top: .32em;
+    margin: 0;
+    width: 1em;
+    height: 1em;
+    border: 1.5px solid var(--rizo-ink);
+    border-radius: 0;
+    background: var(--rizo-paper);
+}
+
+.vp-doc .task-list-item>input:checked {
+    background: var(--rizo-ink-a);
+    box-shadow: inset 0 0 0 2px var(--rizo-paper);
+}
+
+.vp-doc .task-list-item:has(> input:checked)>p {
+    color: var(--rizo-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--rizo-ink-a);
+}
+
+/* --------------------------------------------------------------------------
+   8. Blockquote — halftone dot screen
+   -------------------------------------------------------------------------- */
+.vp-doc blockquote {
+    margin: 1.5em 0;
+    padding: 1em 1.25em;
+    border: 0;
+    color: var(--rizo-ink);
+    background-image: radial-gradient(color-mix(in srgb, var(--rizo-ink-a) 35%, transparent) 1px,
+            transparent 1.4px);
+    background-size: 7px 7px;
+}
+
+.vp-doc blockquote> :first-child {
+    margin-top: 0;
+}
+
+.vp-doc blockquote> :last-child {
+    margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. Custom blocks (tip / info / warning / danger / important)
+   -------------------------------------------------------------------------- */
+.vp-doc .custom-block {
+    padding: .95em 1.15em;
+    border: 2px solid var(--vp-custom-block-border, var(--rizo-note));
+    border-radius: 0;
+    background: var(--vp-custom-block-bg, var(--rizo-paper));
+    color: var(--rizo-ink);
+}
+
+.vp-doc .custom-block.tip {
+    border-color: var(--rizo-tip);
+    background: color-mix(in srgb, var(--rizo-tip) 7%, var(--rizo-paper));
+}
+
+.vp-doc .custom-block.info {
+    border-color: var(--rizo-note);
+    background: color-mix(in srgb, var(--rizo-note) 7%, var(--rizo-paper));
+}
+
+.vp-doc .custom-block.warning {
+    border-color: var(--rizo-warning);
+    background: color-mix(in srgb, var(--rizo-warning) 7%, var(--rizo-paper));
+}
+
+.vp-doc .custom-block.danger {
+    border-color: var(--rizo-caution);
+    background: color-mix(in srgb, var(--rizo-caution) 7%, var(--rizo-paper));
+}
+
+.vp-doc .custom-block.important {
+    border-color: var(--rizo-important);
+    background: color-mix(in srgb, var(--rizo-important) 7%, var(--rizo-paper));
+}
+
+.vp-doc .custom-block .custom-block-title {
+    font-family: var(--rizo-head);
+    font-size: .74em;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .3em;
+    color: inherit;
+}
+
+.vp-doc .custom-block>p {
+    margin: 0;
+}
+
+.vp-doc .custom-block>p+p {
+    margin-top: .6em;
+}
+
+/* --------------------------------------------------------------------------
+   10. Horizontal rule — dashed pink ink
+   -------------------------------------------------------------------------- */
+.vp-doc hr {
+    border: 0;
+    height: 6px;
+    margin: 2.6em 0;
+    background: repeating-linear-gradient(90deg,
+            var(--rizo-ink-a) 0 12px,
+            transparent 12px 20px);
+}
+
+/* --------------------------------------------------------------------------
+   11. Tables — inked box with offset second-ink block
+   -------------------------------------------------------------------------- */
+.vp-doc table {
+    display: table;
+    width: 100%;
+    margin: 1.6em 6px 2em 0;
+    border: 2px solid var(--rizo-ink);
+    border-collapse: collapse;
+    box-shadow: var(--rizo-offset) var(--rizo-offset) 0 var(--rizo-ink-a);
+    font-family: var(--rizo-head);
+    font-size: .86em;
+    line-height: 1.5;
+    overflow: visible;
+}
+
+.vp-doc tr {
+    border-top: 0;
+}
+
+.vp-doc th,
+.vp-doc td {
+    padding: .62em .9em;
+    border: 0;
+    vertical-align: top;
+}
+
+.vp-doc th {
+    background: var(--rizo-ink-b);
+    color: var(--rizo-on-ink-b);
+    font-weight: 700;
+    font-size: .84em;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.vp-doc tbody tr+tr td {
+    border-top: 1px solid var(--rizo-rule);
+}
+
+.vp-doc td code {
+    font-size: .92em;
+}
+
+/* --------------------------------------------------------------------------
+   12. Code blocks — inked box, offset blue block, language chip on the edge
+   -------------------------------------------------------------------------- */
+.vp-doc div[class*='language-'] {
+    position: relative;
+    margin: 1.6em calc(var(--rizo-offset) + 2px) 2em 0;
+    border: 2px solid var(--rizo-ink);
+    border-radius: 0;
+    background: var(--rizo-surface);
+    box-shadow: var(--rizo-offset) var(--rizo-offset) 0 var(--rizo-ink-b);
+}
+
+.vp-doc div[class*='language-'] pre {
+    margin: 0;
+    padding: 18px 20px;
+    background: transparent;
+}
+
+.vp-doc div[class*='language-'] code {
+    background: transparent;
+    padding: 0;
+    font-family: var(--rizo-mono);
+    font-size: .8em;
+    line-height: 1.65;
+}
+
+/* language chip — move VitePress's built-in .lang to the top-left edge */
+.vp-doc div[class*='language-']>span.lang {
+    position: absolute;
+    top: -.85em;
+    left: 14px;
+    right: auto;
+    padding: 2px 7px;
+    font: 700 10px/1.4 var(--rizo-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--rizo-paper);
+    background: var(--rizo-ink);
+    border-radius: 0;
+    transform: none;
+}
+
+/* copy button */
+.vp-doc div[class*='language-']>button.copy {
+    top: 6px;
+    right: 6px;
+    border-radius: 0;
+    border: 1px solid var(--rizo-rule);
+    background-color: var(--rizo-surface-2);
+}
+
+/* line highlight (::: code-group / {1,3-4}) */
+.vp-doc .line.highlighted {
+    background: var(--vp-code-line-highlight-color);
+}
+
+/* --------------------------------------------------------------------------
+   13. Images, outline, TOC
+   -------------------------------------------------------------------------- */
+.vp-doc img {
+    border-radius: 0;
+}
+
+.VPDocAsideOutline .outline-link {
+    color: var(--rizo-ink-soft);
+}
+
+.VPDocAsideOutline .outline-link:hover,
+.VPDocAsideOutline .outline-link.active {
+    color: var(--rizo-ink-a-text);
+}
+
+/* --------------------------------------------------------------------------
+   14. Site chrome
+   -------------------------------------------------------------------------- */
+.VPNavBar,
+.VPNavBar.has-sidebar .content {
+    background: var(--rizo-paper);
+}
+
+.VPSidebar {
+    background: var(--rizo-surface);
+    border-right: 1px solid var(--rizo-rule);
+}
+
+.VPSidebarItem .text {
+    color: var(--rizo-ink-soft);
+}
+
+.VPSidebarItem .item:hover .text {
+    color: var(--rizo-ink);
+}
+
+.VPSidebarItem.is-active>.item .text,
+.VPSidebarItem.is-active>.item .link .text {
+    color: var(--rizo-ink-a-text);
+    font-weight: 700;
+}
+
+.VPNavBarSearch .DocSearch-Button,
+.VPLocalSearchBox {
+    border-radius: 0;
+}
+
+.VPHero .name {
+    font-family: var(--rizo-head);
+    letter-spacing: -.03em;
+}
+
+/* --------------------------------------------------------------------------
+   15. Print / PDF
+   -------------------------------------------------------------------------- */
+@media print {
+    .vp-doc {
+        font-size: 11pt;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .vp-doc h1,
+    .vp-doc h2,
+    .vp-doc h3,
+    .vp-doc h4 {
+        break-after: avoid-page;
+    }
+
+    .vp-doc div[class*='language-'],
+    .vp-doc table,
+    .vp-doc blockquote,
+    .vp-doc .custom-block,
+    .vp-doc img {
+        break-inside: avoid;
+    }
+
+    .vp-doc p,
+    .vp-doc li {
+        orphans: 3;
+        widows: 3;
+    }
+}

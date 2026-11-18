@@ -1,3 +1,5 @@
+@import "../rizo-theme/rizo.css";
+
 .vp-doc strong {
     font-weight: 700;
     background: linear-gradient(90deg,
@@ -33,17 +35,9 @@
     }
 }
 
-.vp-doc h2 {
-    &::first-letter {
-        font-size: 1.5em;
-        color: rgb(217, 47, 243);
-    }
-}
 
-.vp-doc h3 {
-    background: linear-gradient(to right, #ff942261 30%, transparent);
-    padding: 2px 2px;
-}
+
+
 
 .red-sub-text {
     color: red;

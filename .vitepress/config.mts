@@ -5,7 +5,7 @@ import markdownItExtensible from 'markdown-it-extensible'
 import { withMermaid } from 'vitepress-mermaid-plugin'
 import { withPwa } from '@vite-pwa/vitepress'
 import { back2topPlugin } from 'vitepress-plugin-back2top'
-
+import { rizoLight, rizoDark } from './theme/rizo-theme/rizo'
 // import mermaidPlugin from '@vitepress-plugin/mermaid'
 // https://vitepress.dev/reference/site-config
 export default withPwa(withMermaid(defineConfig({
@@ -69,6 +69,7 @@ export default withPwa(withMermaid(defineConfig({
     description: "kaogong-doc",
     base: '/kaogong-doc',
     markdown: {
+        theme: { light: rizoLight, dark: rizoDark },
         math: true,
         config: (md) => {
             md.use(markdownItExtensible, {
