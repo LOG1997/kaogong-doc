@@ -10,7 +10,7 @@
             rgba(96, 132, 176, .24));
     background-size: 200% 100%;
     animation: strong-gradient 6s linear infinite;
-    padding: 2px 3px;
+    padding: 0 3px;
     border-radius: 4px;
     text-shadow: 0 0 0.5px var(--vp-c-text-3);
 }

@@ -100,6 +100,14 @@ title: 常识目录
       </ul>
     </details>
   </li>
+  <li class="toc-branch">
+    <details>
+      <summary><strong>政治</strong></summary>
+      <ul>
+        <li><a href="/kaogong-doc/base/常识/政治/政治">政治</a></li>
+      </ul>
+    </details>
+  </li>
 </ul>
 
 </div>

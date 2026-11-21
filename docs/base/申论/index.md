@@ -32,6 +32,7 @@ title: 申论目录
           <details>
             <summary><strong>范文</strong></summary>
             <ul>
+              <li><a href="/kaogong-doc/base/申论/作文/范文/2021国考副省作文——改革黑凉">2021国考副省作文——改革黑凉</a></li>
               <li><a href="/kaogong-doc/base/申论/作文/范文/2025四川县乡范文-粉笔">2025四川县乡范文-粉笔</a></li>
             </ul>
           </details>

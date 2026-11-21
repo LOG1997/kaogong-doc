@@ -5,6 +5,8 @@ import FlashCard from './components/FlashCard.vue'
 import FlashCompare from './components/FlashCompare.vue'
 import RegisterSW from './components/RegisterSW.vue'
 import WhisCards from './components/WhisCards.vue'
+
+
 import './styles/root.css'
 import './styles/custom.css'
 
