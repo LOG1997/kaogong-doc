@@ -47,6 +47,7 @@ title: 申论目录
         </li>
         <li><a href="/kaogong-doc/base/申论/作文/申论大作文-张小龙">申论大作文-张小龙</a></li>
         <li><a href="/kaogong-doc/base/申论/作文/作文">作文</a></li>
+        <li><a href="/kaogong-doc/base/申论/作文/作文各部分写法">作文各部分写法</a></li>
         <li><a href="/kaogong-doc/base/申论/作文/作文热点">作文热点</a></li>
       </ul>
     </details>
