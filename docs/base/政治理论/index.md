@@ -14,6 +14,7 @@ title: 政治理论目录
       <ul>
         <li><a href="/kaogong-doc/base/政治理论/36计/经济">经济</a></li>
         <li><a href="/kaogong-doc/base/政治理论/36计/社会">社会</a></li>
+        <li><a href="/kaogong-doc/base/政治理论/36计/生态">生态</a></li>
         <li><a href="/kaogong-doc/base/政治理论/36计/文化">文化</a></li>
         <li><a href="/kaogong-doc/base/政治理论/36计/政治">政治</a></li>
       </ul>
