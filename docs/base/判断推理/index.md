@@ -12,8 +12,8 @@ title: 判断推理目录
     <details>
       <summary><strong>定义判断</strong></summary>
       <ul>
+        <li><a href="/kaogong-doc/base/判断推理/定义判断/36计-定义判断">36计-定义判断</a></li>
         <li><a href="/kaogong-doc/base/判断推理/定义判断/定义判断">定义判断</a></li>
-        <li><a href="/kaogong-doc/base/判断推理/定义判断/粉笔-定义判断">粉笔-定义判断</a></li>
       </ul>
     </details>
   </li>
@@ -73,6 +73,7 @@ title: 判断推理目录
             </ul>
           </details>
         </li>
+        <li><a href="/kaogong-doc/base/判断推理/图形推理/粉笔图推最后一次">粉笔图推最后一次</a></li>
         <li><a href="/kaogong-doc/base/判断推理/图形推理/刘义恒图推">刘义恒图推</a></li>
       </ul>
     </details>

@@ -24,6 +24,8 @@ title: 政治理论目录
     <details>
       <summary><strong>排坑内容</strong></summary>
       <ul>
+        <li><a href="/kaogong-doc/base/政治理论/排坑内容/党">党</a></li>
+        <li><a href="/kaogong-doc/base/政治理论/排坑内容/马哲">马哲</a></li>
         <li><a href="/kaogong-doc/base/政治理论/排坑内容/新思想">新思想</a></li>
       </ul>
     </details>
